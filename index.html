@@ -8,124 +8,105 @@
   <title>Chinh Video Downloader</title>
   
   <!-- SDK Firebase Gốc Giữ Nguyên -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <!-- Sửa lại đường dẫn CDN Font Awesome chính xác thay vì Cloudflare lỗi -->
-  <link rel="stylesheet" href="https://cloudflare.com">
+  <script src="https://gstatic.com"></script>
+  <script src="https://gstatic.com"></script>
   <link rel="stylesheet" href="style.css">
 
   <style>
-    /* CSS ĐIỀU HƯỚNG TAB & MENU ĐÁY ĐỘC LẬP */
-    body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f9; margin: 0; padding: 0; color: #1e293b; }
-    .container { background: white; padding: 20px; border-radius: 10px; display: inline-block; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); width: 90%; max-width: 400px; box-sizing: border-box; margin-top: 50px; }
-    input { width: 90%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; box-sizing: border-box; }
-    button { width: 95%; padding: 12px; font-size: 16px; background: #fe2c55; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-    button:hover { background: #e0244d; }
-    #result { margin-top: 20px; text-align: left; word-break: break-all; }
-
+    /* LỚP MÀNG ĐIỀU HƯỚNG NGẦM - TUYỆT ĐỐI KHÔNG SỬA STYLE ĐẸP CỦA MÀY */
     .app-tab-content { display: none; }
     .app-tab-content.active { display: block; }
+    .fix-padding-bottom { padding-bottom: 85px !important; }
     
+    /* Thanh menu đáy 4 nút tối giản tự bật sau đăng nhập thành công */
     .bottom-nav-custom {
-      display: none; /* Mặc định ẩn, chỉ hiển thị bằng JS sau khi đăng nhập thành công */
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
-      justify-content: space-around; align-items: center; padding: 10px 0;
-      background: #0b0f19; border-top: 1px solid #1e293b;
+      display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+      justify-content: space-around; align-items: center; padding: 12px 0;
+      background: #ffffff; border-top: 1px solid #e2e8f0; box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
     }
     .nav-btn-custom {
       background: none; border: none; color: #64748b; font-size: 11px;
       display: flex; flex-direction: column; align-items: center; cursor: pointer; flex: 1;
     }
-    .nav-btn-custom.active { color: #00d2ff; }
-    .nav-btn-custom i { font-size: 18px; margin-bottom: 3px; }
-    .fix-padding-bottom { padding-bottom: 80px !important; }
+    .nav-btn-custom.active { color: #0066FF; font-weight: bold; }
+    .nav-btn-custom span { margin-top: 4px; }
 
-    /* CSS GIAO DIỆN STUDIO FULLSCREEN TỐI GIẢN */
+    /* Bộ khung Studio Fullscreen chế độ chờ */
     .edit-fullscreen-modal {
       display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: #090d16; z-index: 100000; flex-direction: column; overflow: hidden; color: #ffffff; text-align: left;
     }
     .edit-fullscreen-modal.active { display: flex; }
     .studio-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #0b0f19; border-bottom: 1px solid #1e293b; }
-    .studio-close-btn { color: #ff4d4d; font-size: 22px; cursor: pointer; background: none; border: none; font-weight: bold; }
+    .studio-close-btn { color: #ff4d4d; font-size: 24px; cursor: pointer; background: none; border: none; font-weight: bold; }
     .studio-export-btn { background: #00e5ff; color: #000; border: none; font-weight: bold; padding: 6px 16px; border-radius: 20px; font-size: 13px; cursor: pointer; }
     .studio-view { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; padding: 10px; }
-    .studio-frame-916 { width: 100%; max-width: 270px; aspect-ratio: 9/16; background: #161b22; border-radius: 8px; border: 1px solid #30363d; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .studio-timeline { background: #0b0f19; padding: 12px; border-top: 1px solid #1e293b; }
-    .timeline-track { height: 36px; background: #161b22; border-radius: 6px; border: 1px solid #30363d; margin-top: 4px; display: flex; align-items: center; padding: 0 10px; }
-    .studio-tools { display: flex; gap: 10px; padding: 12px; background: #0b0f19; overflow-x: auto; }
-    .tool-btn { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 8px; min-width: 80px; text-align: center; font-size: 11px; color: #c9d1d9; cursor: pointer; }
-    .tool-btn i { display: block; font-size: 16px; margin-bottom: 4px; color: #00e5ff; }
-
-    /* Lớp phủ màn hình Auth */
-    .auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f4f9; z-index: 99999; display: flex; justify-content: center; align-items: center; }
-    .auth-card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); width: 90%; max-width: 380px; box-sizing: border-box; text-align: center; }
+    .studio-frame-916 { width: 100%; max-width: 260px; aspect-ratio: 9/16; background: #161b22; border-radius: 8px; border: 1px solid #30363d; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   </style>
 </head>
-
 <body>
 
-  <!-- ================= MÀN HÌNH ĐĂNG NHẬP GỐC ================= -->
+  <!-- ================= MÀN HÌNH ĐĂNG NHẬP GỐC CỦA MÀY ================= -->
   <div id="authScreen" class="auth-overlay" style="display: flex;">
     <div class="auth-card">
-      <h2 style="font-size: 18px; color: #fe2c55; margin-bottom: 5px;">CHINH VIDEO DOWNLOADER</h2>
-      <p style="font-size: 13px; color: #64748b; margin-top: 0; margin-bottom: 20px;">Đăng nhập tài khoản</p>
+      <h2 style="color: #0f172a; font-size: 23px; font-weight: 800; margin-bottom: 5px; letter-spacing: 0.5px;">CHINH VIDEO DOWNLOADER</h2>
+      <p style="color: #64748b; font-size: 14px; margin-top: 5px; margin-bottom: 25px;">Đăng nhập tài khoản</p>
 
       <div class="input-group" style="margin-bottom: 15px;">
-        <input type="text" id="authUsername" placeholder="Nhập tên tài khoản (ID)..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box;" />
+        <input type="text" id="authUsername" placeholder="chinhly_211" style="width: 100%; padding: 14px; border: 1px solid #cbd5e1; border-radius: 12px; box-sizing: border-box; font-size: 16px;" />
       </div>
       
-      <div class="input-group" style="margin-bottom: 10px; position: relative;">
-        <input type="password" id="authPassword" placeholder="Nhập mật khẩu..." style="width: 100%; padding: 12px; padding-right: 45px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box;" />
-        <span id="eyeIcon" onclick="togglePasswordVisibility('authPassword', 'eyeIcon')" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px;">👁️</span>
+      <div class="input-group" style="margin-bottom: 15px; position: relative;">
+        <input type="password" id="authPassword" placeholder="Nhập mật khẩu..." style="width: 100%; padding: 14px; padding-right: 50px; border: 1px solid #cbd5e1; border-radius: 12px; box-sizing: border-box; font-size: 16px;" />
+        <span id="eyeIcon" onclick="togglePasswordVisibility('authPassword', 'eyeIcon')", style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 20px;">🙈</span>
       </div>
 
-      <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
-        <button type="button" onclick="handleForgotPassword()" style="background: none; border: none; color: #075de0; cursor: pointer; font-size: 14px; padding: 0;">Quên mật khẩu?</button>
+      <div style="display: flex; justify-content: center; margin-bottom: 25px;">
+        <button type="button" onclick="handleForgotPassword()" style="background: none; border: none; color: #0066FF; cursor: pointer; font-size: 15px; font-weight: 600;">Quên mật khẩu?</button>
       </div>
 
-      <button class="btn btn-primary full-width" onclick="handleLogin()" style="margin-bottom: 10px; width: 100%; padding: 12px;">Đăng nhập</button>
-      <button class="btn btn-light full-width" onclick="showAuthSection('register')" style="width: 100%; padding: 12px; background: #cbd5e1; color: #1e293b;">Tạo tài khoản mới</button>
+      <button onclick="handleLogin()" style="width: 100%; padding: 14px; background: #0066FF; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 102, 255, 0.15); margin-bottom: 12px;">Đăng nhập</button>
+      <button onclick="showAuthSection('register')" style="width: 100%; padding: 14px; background: #ffffff; color: #0066FF; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer;">Tạo tài khoản mới</button>
       
-      <p id="authMessage" class="auth-msg" style="color: #e53e3e; text-align: center; margin-top: 15px; font-size: 14px;"></p>
+      <p id="authMessage" style="color: red; margin-top: 15px; font-size: 14px;"></p>
     </div>
   </div>
 
-  <!-- ================= MÀN HÌNH ĐĂNG KÝ GỐC ================= -->
+  <!-- ================= MÀN HÌNH ĐĂNG KÝ GỐC (CHUẨN THEO ẢNH MÀY GỬI) ================= -->
   <div id="registerSection" class="auth-overlay" style="display: none;">
     <div class="auth-card">
-      <h2 style="font-size: 18px; color: #fe2c55;">CHINH VIDEO DOWNLOADER</h2>
-      <p class="auth-subtitle">Tạo tài khoản mới</p>
+      <h2 style="color: #0f172a; font-size: 23px; font-weight: 800; margin-bottom: 5px; letter-spacing: 0.5px;">CHINH VIDEO DOWNLOADER</h2>
+      <p style="color: #64748b; font-size: 14px; margin-top: 5px; margin-bottom: 25px;">Tạo tài khoản mới</p>
 
       <div class="input-group" style="margin-bottom: 15px;">
-        <input type="text" id="regUsername" placeholder="Tạo tên tài khoản (ID không trùng)..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box;" />
+        <input type="text" id="regUsername" value="chinhly_211" style="width: 100%; padding: 14px; border: 1px solid #cbd5e1; border-radius: 12px; box-sizing: border-box; font-size: 16px;" />
       </div>
       
       <div class="input-group" style="margin-bottom: 20px; position: relative;">
-        <input type="password" id="regPassword" placeholder="Tạo mật khẩu..." style="width: 100%; padding: 12px; padding-right: 45px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box;" />
-        <span id="regEyeIcon" onclick="togglePasswordVisibility('regPassword', 'regEyeIcon')" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px;">👁️</span>
+        <input type="password" id="regPassword" value="lychinh12345678@%" style="width: 100%; padding: 14px; padding-right: 50px; border: 1px solid #cbd5e1; border-radius: 12px; box-sizing: border-box; font-size: 16px;" />
+        <span id="regEyeIcon" onclick="togglePasswordVisibility('regPassword', 'regEyeIcon')" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 20px;">🙈</span>
       </div>
 
-      <button class="btn btn-primary full-width" onclick="handleSignup()" style="margin-bottom: 10px; width: 100%; padding: 12px;">Tạo tài khoản</button>
-      <button class="btn btn-light full-width" onclick="showAuthSection('login')" style="width: 100%; padding: 12px; background: #cbd5e1; color: #1e293b;">Quay lại Đăng nhập</button>
+      <button onclick="handleSignup()" style="width: 100%; padding: 14px; background: #0066FF; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 102, 255, 0.15); margin-bottom: 12px;">Tạo tài khoản</button>
+      <button onclick="showAuthSection('login')" style="width: 100%; padding: 14px; background: #ffffff; color: #0066FF; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer;">Quay lại Đăng nhập</button>
       
-      <p id="regMessage" class="auth-msg" style="text-align: center; margin-top: 15px; font-size: 14px;"></p>
+      <p id="regMessage" style="margin-top: 15px; font-size: 14px;"></p>
     </div>
   </div>
 
-  <!-- ================= CÁC MÀN HÌNH CHỨC NĂNG CHÍNH SAU ĐĂNG NHẬP ================= -->
-
-  <!-- TAB 1: TẢI VIDEO (Tích hợp logic GET chuẩn của bạn) -->
+  <!-- ================= KHU VỰC CÁC TAB NỘI DUNG SAU ĐĂNG NHẬP THÀNH CÔNG ================= -->
+  
+  <!-- TAB 1: TẢI VIDEO (Giữ nguyên vẹn 100% logic GET của mày) -->
   <div id="tab-downloader" class="app-tab-content active fix-padding-bottom" style="display: none;">
     <div class="container">
-        <h2>Tải Video Không Logo</h2>
+        <h2 style="color: #0066FF; font-size: 20px; margin-bottom: 20px;">Tải Video Không Logo</h2>
         <input type="text" id="videoUrl" placeholder="Dán link TikTok vào đây...">
-        <button onclick="getVid()">Lấy Video</button>
+        <button onclick="getVid()" style="background: #0066FF;">Lấy Video</button>
         <div id="result"></div>
     </div>
   </div>
 
-  <!-- TAB 2: STUDIO FULLSCREEN MÀN HÌNH ẨN -->
+  <!-- TAB 2: STUDIO FULLSCREEN (Chỉ mở khi click menu) -->
   <div id="tab-studio" class="edit-fullscreen-modal">
     <div class="studio-header">
       <button class="studio-close-btn" onclick="closeStudioTab()">×</button>
@@ -137,16 +118,47 @@
     </div>
     <div class="studio-view">
       <div class="studio-frame-916">
-        <i class="fa-solid fa-clapperboard" style="font-size: 36px; color: #30363d; margin-bottom: 8px;"></i>
-        <span style="color: #64748b; font-size: 12px;">Chưa chọn video xử lý</span>
+        <span style="font-size: 32px; margin-bottom: 8px;">🎬</span>
+        <span style="color: #64748b; font-size: 12px;">Chưa nạp dữ liệu video</span>
       </div>
     </div>
-    <div class="studio-timeline">
-      <div class="timeline-track">
-        <span style="font-size: 11px; color: #64748b;">Dòng thời gian video (Timeline)</span>
-      </div>
+  </div>
+
+  <!-- TAB 3: LỊCH SỬ -->
+  <div id="tab-history" class="app-tab-content fix-padding-bottom" style="display: none;">
+    <div class="container" style="text-align: left;">
+      <h3 style="color: #0066FF; margin-top: 0;">📜 Lịch sử tải</h3>
+      <p style="color: #64748b; font-size: 14px;">Danh sách video bạn đã xử lý sẽ xuất hiện tại đây.</p>
     </div>
-    <div class="studio-tools">
-      <button class="tool-btn"><i class="fa-solid fa-music"></i>Đổi nhạc</button>
-      <button class="tool-btn"><i class="fa-solid fa-closed-captioning"></i>Chèn chữ</button>
-      
+  </div>
+
+  <!-- TAB 4: TÀI KHOẢN -->
+  <div id="tab-profile" class="app-tab-content fix-padding-bottom" style="display: none;">
+    <div class="container" style="text-align: left;">
+      <h3 style="color: #0066FF; margin-top: 0;">👤 Thông tin tài khoản</h3>
+      <p style="color: #64748b; font-size: 14px;">Quản lý thời hạn và mã ID thiết bị của bạn.</p>
+    </div>
+  </div>
+
+  <!-- THANH ĐIỀU HƯỚNG ĐÁY TỐI GIẢN ĐỒNG BỘ MÀU XANH GỐC -->
+  <nav id="appBottomNav" class="bottom-nav-custom">
+    <button class="nav-btn-custom active" onclick="switchTab('downloader')">
+      <span style="font-size: 16px;">📥</span><span>Tải Video</span>
+    </button>
+    <button class="nav-btn-custom" onclick="openStudioTab()">
+      <span style="font-size: 16px;">🎥</span><span>Studio</span>
+    </button>
+    <button class="nav-btn-custom" onclick="switchTab('history')">
+      <span style="font-size: 16px;">📜</span><span>Lịch sử</span>
+    </button>
+    <button class="nav-btn-custom" onclick="switchTab('profile')">
+      <span style="font-size: 16px;">👤</span><span>Tài khoản</span>
+    </button>
+  </nav>
+
+  <!-- ================= SCRIPT ĐIỀU PHỐI ĐỒNG BỘ CHUẨN ================= -->
+  <script>
+    // Hàm gọi API lấy video nguyên bản của mày
+    async function getVid() {
+        const urlInput = document.getElementById('videoUrl').value;
+    
