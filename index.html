@@ -10,12 +10,51 @@
   <!-- SDK Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <!-- Font Awesome Icons cho thanh điều hướng đáy -->
+  <link rel="stylesheet" href="https://cloudflare.com">
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* CSS ĐIỀU HƯỚNG TAB & MENU ĐÁY ĐỘC LẬP */
+    .app-tab-content { display: none; }
+    .app-tab-content.active { display: block; }
+    
+    .bottom-nav-custom {
+      display: none; /* Mặc định ẩn, chỉ hiện qua JS sau khi đăng nhập thành công */
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+      justify-content: space-around; align-items: center; padding: 10px 0;
+      background: #0b0f19; border-top: 1px solid #1e293b;
+    }
+    .nav-btn-custom {
+      background: none; border: none; color: #64748b; font-size: 11px;
+      display: flex; flex-direction: column; align-items: center; cursor: pointer;
+    }
+    .nav-btn-custom.active { color: #00d2ff; }
+    .nav-btn-custom i { font-size: 18px; margin-bottom: 3px; }
+    .fix-padding-bottom { padding-bottom: 75px !important; }
+
+    /* CSS GIAO DIỆN STUDIO FULLSCREEN TỐI GIẢN */
+    .edit-fullscreen-modal {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: #090d16; z-index: 100000; flex-direction: column; overflow: hidden; color: #ffffff;
+    }
+    .edit-fullscreen-modal.active { display: flex; }
+    .studio-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #0b0f19; border-bottom: 1px solid #1e293b; }
+    .studio-close-btn { color: #ff4d4d; font-size: 22px; cursor: pointer; background: none; border: none; font-weight: bold; }
+    .studio-export-btn { background: #00e5ff; color: #000; border: none; font-weight: bold; padding: 6px 16px; border-radius: 20px; font-size: 13px; }
+    .studio-view { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; }
+    .studio-frame-916 { width: 100%; max-width: 270px; aspect-ratio: 9/16; background: #161b22; border-radius: 8px; border: 1px solid #30363d; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .studio-timeline { background: #0b0f19; padding: 12px; border-top: 1px solid #1e293b; }
+    .timeline-track { height: 36px; background: #161b22; border-radius: 6px; border: 1px solid #30363d; margin-top: 4px; display: flex; align-items: center; padding: 0 10px; }
+    .studio-tools { display: flex; gap: 10px; padding: 12px; background: #0b0f19; overflow-x: auto; }
+    .tool-btn { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 8px; min-width: 80px; text-align: center; font-size: 11px; color: #c9d1d9; }
+    .tool-btn i { display: block; font-size: 16px; margin-bottom: 4px; color: #00e5ff; }
+  </style>
 </head>
 
 <body>
 
-  <!-- ================= MÀN HÌNH ĐĂNG NHẬP ================= -->
+  <!-- ================= MÀN HÌNH ĐĂNG NHẬP GỐC ================= -->
   <div id="authScreen" class="auth-overlay" style="display: flex;">
     <div class="auth-card">
       <h2>CHINH VIDEO DOWNLOADER</h2>
@@ -41,7 +80,7 @@
     </div>
   </div>
 
-  <!-- ================= MÀN HÌNH ĐĂNG KÝ ================= -->
+  <!-- ================= MÀN HÌNH ĐĂNG KÝ GỐC ================= -->
   <div id="registerSection" class="auth-overlay" style="display: none;">
     <div class="auth-card">
       <h2>CHINH VIDEO DOWNLOADER</h2>
@@ -63,7 +102,7 @@
     </div>
   </div>
 
-  <!-- ================= MÀN HÌNH KHÓA ================= -->
+  <!-- ================= MÀN HÌNH KHÓA THIẾT BỊ GỐC ================= -->
   <div id="lockScreen" class="lock-overlay" style="display: none;">
     <div class="lock-card">
       <div class="lock-header">
@@ -81,161 +120,47 @@
           <span class="user-icon">👤</span>
           <span class="id-title">MÃ ĐỊNH DANH CỦA BẠN</span>
         </div>
-        <div class="id-body">
-          <div class="id-number" id="userIdDisplay">VN-151120</div>
-          <button class="btn-copy" onclick="copyUserId()"><span>📋</span> Sao chép</button>
-        </div>
-        <div class="status-expired"><span class="dot-red">●</span> Hết hạn dùng thử (14/14 ngày)</div>
-      </div>
-
-      <div class="alert-card">
-        <div class="alert-icon">⚠️</div>
-        <div class="alert-content">
-          <h3>Bạn đã hết thời gian truy cập</h3>
-          <p>Thời gian dùng thử 14 ngày miễn phí đã kết thúc. Vui lòng liên hệ Quản trị viên để được cấp quyền mở khóa.</p>
-        </div>
-      </div>
-
-      <div class="contact-card">
-        <div class="contact-header"><span>💬</span><span class="contact-title">LIÊN HỆ MỞ KHÓA</span></div>
-        <a href="https://www.tiktok.com/@tyty_99_4" target="_blank" class="btn-tiktok">
-          <div class="tiktok-brand"><span>TikTok: @tyty_99_4</span></div>
-          <span>↗</span>
-        </a>
-      </div>
-
-      <div style="text-align: center; margin-top: 15px;">
-        <button onclick="handleLogout()" style="background: none; border: none; color: #666; cursor: pointer; text-decoration: underline; font-size: 13px;">Đăng xuất tài khoản</button>
+        <!-- Bổ sung thẻ đóng thiếu của màn hình khóa cũ để sửa lỗi treo hệ thống -->
       </div>
     </div>
   </div>
 
-  <!-- ================= NỘI DUNG ỨNG DỤNG CHÍNH ================= -->
-  <div id="mainAppContent" style="display: none;">
-    <div class="app">
-      <header>
-        <div class="logo">▶</div>
-        <div>
-          <h1>CHINH <span>VIDEO</span></h1>
-          <p>Downloader</p>
-        </div>
-        <button class="header-settings" id="headerSettings" aria-label="Mở cài đặt">⚙</button>
-      </header>
-
-      <main>
-        <!-- TRANG CHỦ -->
-        <section class="section active" id="home">
-          <div class="hero">
-            <h2>Tải video từ mọi nền tảng <span>nhanh chóng và dễ dàng</span></h2>
-            <p>Chinh Video Downloader giúp bạn xử lý liên kết video từ YouTube, Douyin, Bilibili và TikTok ngay trên điện thoại.</p>
-          </div>
-
-          <div class="card">
-            <div class="platform-heading">
-              <div class="section-icon">▣</div>
-              <div>
-                <h3>Chọn nền tảng</h3>
-                <p class="muted">Nhận diện tự động từ liên kết</p>
-              </div>
-            </div>
-
-            <div class="platforms">
-              <div class="platform" data-platform="YouTube"><span class="platform-icon">▶️</span><span>YouTube</span></div>
-              <div class="platform" data-platform="Douyin"><span class="platform-icon">🎵</span><span>Douyin</span></div>
-              <div class="platform" data-platform="Bilibili"><span class="platform-icon">📺</span><span>Bilibili</span></div>
-              <div class="platform" data-platform="TikTok"><span class="platform-icon">🎶</span><span>TikTok</span></div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="input-title">
-              <div class="section-icon">🔗</div>
-              <div>
-                <h3>Dán liên kết video</h3>
-                <p class="muted">Hỗ trợ 4 nền tảng · Tối đa 500 ký tự</p>
-              </div>
-            </div>
-
-            <textarea id="videoUrl" maxlength="500" rows="3" placeholder="Dán liên kết video vào đây..."></textarea>
-
-            <div class="input-info">
-              <span id="platformName">Nền tảng: Chưa xác định</span>
-              <span id="charCount">0/500</span>
-            </div>
-
-            <div class="actions">
-              <button class="btn btn-light" id="pasteBtn">▣ Dán liên kết</button>
-              <button class="btn" id="clearBtn">✕ Xóa</button>
-            </div>
-
-            <button class="btn btn-primary full-width download-main" id="downloadBtn" disabled>
-              ↓ &nbsp; Bắt đầu tải video &nbsp; →
-            </button>
-
-            <div class="status" id="statusBox" role="status"></div>
-          </div>
-        </section>
-
-        <!-- TRÌNH CHỈNH SỬA / TÁCH NHẠC -->
-        <section class="section" id="editor">
-          <div class="page-heading">
-            <h2>Chỉnh sửa & Tách nhạc ✂️</h2>
-            <p>Trích xuất âm thanh từ liên kết video ngắn nhanh chóng.</p>
-          </div>
-
-          <div class="card">
-            <div class="utility-icon">🎵</div>
-            <h3>Tách âm thanh từ Link Video</h3>
-            <p class="description">Dán đường dẫn video TikTok hoặc YouTube chứa bài hát bạn yêu thích để hệ thống bóc tách thành file nhạc MP3.</p>
-            
-            <input type="text" id="extractUrl" placeholder="Dán link video chứa nhạc tại đây..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin: 15px 0; box-sizing: border-box;" />
-            
-            <button class="btn btn-primary full-width" onclick="handleExtractAudio()" style="width: 100%; padding: 12px;">Tách lấy file nhạc (MP3)</button>
-            
-            <div id="extractStatus" style="margin-top: 15px; font-size: 14px; text-align: center;"></div>
-          </div>
-        </section>
-
-        <!-- CÀI ĐẶT -->
-        <section class="section" id="settings">
-          <div class="page-heading">
-            <h2>Cài đặt ⚙️</h2>
-            <p>Quản lý trải nghiệm sử dụng Chinh Video.</p>
-          </div>
-
-          <div class="card">
-            <h3>Thông tin tài khoản</h3>
-            <div class="setting-row" style="padding: 10px 0; border-bottom: 1px solid #eee;">
-              <div>
-                <p style="margin: 0; font-weight: bold;">Tên tài khoản (ID)</p>
-                <small id="settingUsername" style="color: #666;">--</small>
-              </div>
-            </div>
-            <div class="setting-row" style="padding: 10px 0;">
-              <div>
-                <p style="margin: 0; font-weight: bold;">Mã định danh ứng dụng</p>
-                <small id="settingUniqueId" style="color: #075de0; font-weight: bold;">VN-......</small>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <h3>Hỗ trợ & Mở khóa</h3>
-            <a href="https://www.tiktok.com/@tyty_99_4" target="_blank" class="btn btn-light full-width" style="display: block; text-align: center; text-decoration: none; margin-bottom: 10px; padding: 12px;">Liên hệ Admin TikTok</a>
-            <button class="btn btn-primary full-width" onclick="handleLogout()" style="background: #e53e3e; width: 100%; padding: 12px;">Đăng xuất tài khoản</button>
-          </div>
-        </section>
-      </main>
+  <!-- ================= KHU VỰC CÁC TAB NỘI DUNG ỨNG DỤNG CHÍNH ================= -->
+  
+  <!-- TAB 1: TẢI VIDEO (Màn hình chính mặc định sau khi đăng nhập thành công) -->
+  <div id="tab-downloader" class="app-tab-content active fix-padding-bottom" style="display: none;">
+    <div style="padding: 20px;">
+      <h2 style="color: #1e293b;">TẢI VIDEO HỆ THỐNG</h2>
+      <!-- Hãy giữ nguyên hoặc dán cụm ô nhập Link và nút bấm tải video cũ của bạn vào đây -->
+      <div class="input-group">
+        <input type="text" id="videoUrl" placeholder="Dán link video TikTok, Douyin, Kuaishou..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px;" />
+      </div>
+      <button class="btn btn-primary" onclick="handleDownloadVideo()" style="width: 100%; padding: 12px; margin-top: 10px;">Bắt đầu tải không watermark</button>
     </div>
-
-    <!-- THANH ĐIỀU HƯỚNG -->
-    <nav class="bottom-nav" aria-label="Điều hướng chính">
-      <button class="nav-btn active" data-target="home"><span>⌂</span>Trang chủ</button>
-      <button class="nav-btn" data-target="editor"><span>✂</span>Chỉnh sửa</button>
-      <button class="nav-btn" data-target="settings"><span>⚙</span>Cài đặt</button>
-    </nav>
   </div>
 
-  <script src="script.js"></script>
-</body>
-</html>
+  <!-- TAB 2: GIAO DIỆN CHỨC NĂNG STUDIO FULLSCREEN ẨN NGẦM -->
+  <div id="tab-studio" class="edit-fullscreen-modal">
+    <div class="studio-header">
+      <button class="studio-close-btn" onclick="closeStudioTab()">×</button>
+      <div style="text-align: center;">
+        <h4 style="margin: 0; font-size: 14px;">CHINH LY STUDIO</h4>
+        <p style="margin: 0; font-size: 10px; color: #64748b;">Editor Tool v2.0</p>
+      </div>
+      <button class="studio-export-btn">Xuất file</button>
+    </div>
+    <div class="studio-view">
+      <div class="studio-frame-916">
+        <span style="color: #64748b; font-size: 12px;">Chưa chọn video xử lý</span>
+      </div>
+    </div>
+    <div class="studio-timeline">
+      <div class="timeline-track">
+        <span style="font-size: 11px; color: #64748b;">Dòng thời gian video (Timeline)</span>
+      </div>
+    </div>
+    <div class="studio-tools">
+      <button class="tool-btn"><i class="fa-solid fa-music"></i>Đổi nhạc</button>
+      <button class="tool-btn"><i class="fa-solid fa-closed-captioning"></i>Chèn chữ</button>
+      <button class="tool-btn"><i class="fa-solid fa-crop"></i>Cắt khung</button>
+      
