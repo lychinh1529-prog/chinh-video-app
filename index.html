@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="style.css">
 
   <style>
-    /* CSS Giao diện Studio nguyên bản 100% khi được kích hoạt */
+    /* CSS Giao diện Studio chuyên nghiệp xuất hiện khi bấm tab Chỉnh sửa */
     #editor.active {
       display: flex !important;
       flex-direction: column;
@@ -33,9 +33,10 @@
       font-family: sans-serif;
     }
 
-    /* Ẩn tiêu đề cũ của tab editor trong chế độ Studio */
-    #editor.active > .page-heading {
-      display: none;
+    /* Ẩn tiêu đề mặc định của tab editor */
+    #editor.active > .page-heading,
+    #editor.active > .card {
+      display: none !important;
     }
 
     /* Header Studio */
@@ -54,22 +55,22 @@
       padding: 6px 16px; border-radius: 20px; font-size: 14px; cursor: pointer;
     }
 
-    /* Viewport Video Dọc 9:16 */
+    /* Viewport Video Ngang (hoặc linh hoạt) */
     .studio-viewport-area {
       display: none; flex: 1; align-items: center; justify-content: center;
       background: #090d16; position: relative; padding: 10px; overflow: hidden;
     }
     #editor.active .studio-viewport-area { display: flex; }
 
-    .studio-video-frame-916 {
-      width: 100%; max-width: 280px; aspect-ratio: 9/16; background: #161b22;
+    .studio-video-frame-169 {
+      width: 100%; max-width: 360px; aspect-ratio: 16/9; background: #161b22;
       border-radius: 8px; display: flex; flex-direction: column; align-items: center;
       justify-content: center; position: relative; border: 1px solid #30363d;
     }
     .studio-sub-badge {
-      position: absolute; bottom: 15px; background: rgba(0,0,0,0.6);
-      border: 1px solid rgba(255,255,255,0.2); padding: 6px 10px; border-radius: 8px;
-      font-size: 11px; color: #fff; text-align: center; width: 85%;
+      position: absolute; bottom: 10px; background: rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 6px;
+      font-size: 10px; color: #fff; text-align: center; width: 85%;
     }
 
     /* Timeline cắt video */
@@ -96,7 +97,7 @@
     }
     .quick-tool-card i { display: block; font-size: 16px; margin-bottom: 4px; color: #00e5ff; }
 
-    /* 5 Tab công cụ dưới cùng đúng chuẩn ảnh */
+    /* 5 Tab công cụ dưới cùng */
     .studio-bottom-tabs {
       display: none; justify-content: space-around; background: #000000;
       padding: 10px 0; border-top: 1px solid #1e293b;
@@ -108,11 +109,6 @@
     }
     .studio-tab-item i { font-size: 16px; margin-bottom: 3px; }
     .studio-tab-item.active-tab { color: #ffffff; }
-
-    /* Ẩn nội dung cũ bên trong card của phần editor khi bật studio */
-    #editor.active .card {
-      display: none;
-    }
   </style>
 </head>
 <body>  
@@ -183,24 +179,24 @@
           </div>  
         </section>  
 
-        <!-- TRÌNH CHỈNH SỬA (CHỨA TOÀN BỘ GIAO DIỆN STUDIO PRO NGUYÊN BẢN) -->  
+        <!-- TRÌNH CHỈNH SỬA (GIAO DIỆN STUDIO CHUYÊN NGHIỆP MỚI) -->  
         <section class="section" id="editor">  
           <div class="page-heading">  
             <h2>Chỉnh sửa & Tách nhạc ✂️</h2>  
             <p>Trích xuất âm thanh từ liên kết video ngắn nhanh chóng.</p>  
           </div>  
 
-          <!-- Header Studio (Chỉ hiện khi bấm sang tab Chỉnh sửa) -->
+          <!-- Header Studio -->
           <div class="studio-top-header">
             <button class="studio-close-x" onclick="switchToHome()">✕</button>
             <button class="studio-export-btn" onclick="alert('Đang tiến hành xuất video...')">Xuất</button>
           </div>
 
-          <!-- Viewport Video Dọc 9:16 -->
+          <!-- Viewport Video Ngang 16:9 -->
           <div class="studio-viewport-area">
-            <div class="studio-video-frame-916">
-              <div style="position: absolute; top: 10px; left: 10px; font-size: 10px; background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px;">9:16</div>
-              <i class="fa-solid fa-video" style="font-size: 28px; color: #8b949e; margin-bottom: 6px;"></i>
+            <div class="studio-video-frame-169">
+              <div style="position: absolute; top: 8px; left: 8px; font-size: 10px; background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px;">16:9</div>
+              <i class="fa-solid fa-video" style="font-size: 24px; color: #8b949e; margin-bottom: 4px;"></i>
               <p style="font-size: 11px; color: #8b949e; text-align: center; padding: 0 10px;">Nhấn để chọn Video</p>
               <div class="studio-sub-badge">
                 ✨ Cuộc sống thật đẹp, chỉ cần bạn dũng cảm tiến về phía trước
@@ -237,7 +233,7 @@
             </div>
           </div>
 
-          <!-- 5 Tab công cụ dưới cùng đúng chuẩn ảnh -->
+          <!-- 5 Tab công cụ dưới cùng -->
           <div class="studio-bottom-tabs">
             <button class="studio-tab-item active-tab" onclick="alert('Tab: Chỉnh sửa')">
               <i class="fa-solid fa-scissors"></i>
@@ -259,16 +255,6 @@
               <i class="fa-solid fa-closed-captioning"></i>
               <span>Phụ đề</span>
             </button>
-          </div>
-
-          <!-- Nội dung tách nhạc cũ (sẽ ẩn đi khi vào giao diện studio) -->
-          <div class="card">
-            <div class="utility-icon">🎵</div>
-            <h3>Tách âm thanh từ Link Video</h3>
-            <p class="description">Dán đường dẫn video TikTok hoặc YouTube chứa bài hát bạn yêu thích để hệ thống bóc tách thành file nhạc MP3.</p>
-            <input type="text" id="extractUrl" placeholder="Dán link video chứa nhạc tại đây..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin: 15px 0; box-sizing: border-box;" />
-            <button class="btn btn-primary full-width" onclick="handleExtractAudio()" style="width: 100%; padding: 12px;">Tách lấy file nhạc (MP3)</button>
-            <div id="extractStatus" style="margin-top: 15px; font-size: 14px; text-align: center;"></div>
           </div>
         </section>  
 
@@ -312,7 +298,6 @@
   </div>    
 
   <script>
-    // Hàm phụ trợ để nút dấu X đóng studio và quay về trang chủ
     function switchToHome() {
       const homeBtn = document.querySelector('.nav-btn[data-target="home"]');
       if (homeBtn) homeBtn.click();
