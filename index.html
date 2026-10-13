@@ -2,269 +2,411 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>CHINH VIDEO DOWNLOADER & EDITOR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f8ff">
+  <meta name="description" content="Chinh Ly Video Downloader - công cụ hỗ trợ tải video chuyên nghiệp.">
+  <title>CHINH LY Video</title>
+  
+  <!-- SDK Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="style.css">
+
   <style>
-    :root {
-      --bg-light: #F8FAFC;
-      --card-white: #FFFFFF;
-      --primary-blue: #0066FF;
-      --secondary-blue: #E6F0FF;
-      --text-dark: #0F172A;
-      --text-gray: #64748B;
-      --border-color: #E2E8F0;
+    /* TUỲ CHỈNH HEADER GỌN GÀNG & TÊN CHINH LY MÀU TRẮNG HỒNG */
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px !important; background: #ffffff;
+      border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 50;
+    }
+    .logo {
+      width: 32px !important; height: 32px !important; font-size: 14px !important;
+      border-radius: 8px !important; display: flex; align-items: center; justify-content: center;
+    }
+    /* Chữ CHINH LY màu trắng hồng */
+    .brand-title-custom h1 {
+      font-size: 15px !important; font-weight: 700 !important; margin: 0;
+      background: linear-gradient(135deg, #ffffff 20%, #ff7eb3 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      text-shadow: 0px 1px 2px rgba(255, 126, 179, 0.3);
+    }
+    .brand-title-custom p {
+      font-size: 10px !important; color: #64748b; margin: 0;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg-light); color: var(--text-dark); padding-bottom: 70px; }
-
-    /* HEADER MAIN */
-    .app-header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 14px 18px; background: var(--card-white);
-      border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 10;
-    }
-    .brand { display: flex; align-items: center; gap: 10px; }
-    .brand-logo {
-      width: 36px; height: 36px; background: var(--primary-blue); color: #fff;
-      border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;
-    }
-    .brand-title h1 { font-size: 16px; font-weight: 700; color: var(--text-dark); }
-    .brand-title h1 span { color: var(--primary-blue); }
-    .brand-title p { font-size: 11px; color: var(--text-gray); }
-
-    /* CONTAINER & HOME TAB */
-    .container { padding: 16px; max-width: 500px; margin: 0 auto; }
-    .card {
-      background: var(--card-white); border: 1px solid var(--border-color);
-      border-radius: 16px; padding: 16px; margin-bottom: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    }
-    .input-box {
-      width: 100%; padding: 12px; border: 1px solid var(--border-color);
-      border-radius: 10px; font-size: 14px; margin-bottom: 12px; outline: none;
-    }
-    .btn-blue {
-      width: 100%; background: var(--primary-blue); color: white; border: none;
-      padding: 12px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
-
-    /* FULLSCREEN EDIT MODAL (GIAO DIỆN EDIT TOÀN MÀN HÌNH) */
-    .edit-fullscreen-page {
-      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: #000000; z-index: 999; flex-direction: column; overflow: hidden;
-    }
-    .edit-fullscreen-page.active { display: flex; }
-
-    /* EDIT HEADER WITH CLOSE BUTTON 'X' */
-    .edit-header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 12px 16px; background: rgba(15, 23, 42, 0.9); color: #fff;
-    }
-    .edit-title { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-    .close-edit-btn {
-      background: rgba(255,255,255,0.2); color: #fff; border: none;
-      width: 32px; height: 32px; border-radius: 50%; font-size: 18px;
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-
-    /* VIDEO PREVIEW HOLDER (HỖ TRỢ 16:9 VÀ 9:16) */
-    .video-viewport {
-      flex: 1; display: flex; align-items: center; justify-content: center;
-      background: #090D16; position: relative; overflow: hidden; padding: 10px;
-    }
-    /* Khung chứa video tự co giãn khớp tỷ lệ */
-    .video-container-box {
-      max-width: 100%; max-height: 100%; aspect-ratio: 9/16; background: #1E293B;
-      border-radius: 12px; display: flex; flex-direction: column; align-items: center;
-      justify-content: center; color: #94A3B8; position: relative; border: 1px dashed #334155;
-    }
-    .video-container-box.aspect-16-9 { aspect-ratio: 16/9; width: 100%; }
-
-    /* AI SUBTITLE OVERLAY PREVIEW */
-    .subtitle-overlay {
-      position: absolute; bottom: 20px; left: 10px; right: 10px; text-align: center;
-      background: rgba(0,0,0,0.6); color: #FFD700; padding: 6px 10px;
-      border-radius: 6px; font-size: 13px; font-weight: 700; text-shadow: 1px 1px 2px #000;
-    }
-
-    /* BOTTOM TOOLBAR PANEL (MÀU SÁNG & XANH) */
-    .edit-bottom-panel {
-      background: var(--card-white); border-top-left-radius: 20px; border-top-right-radius: 20px;
-      padding: 16px; display: flex; flex-direction: column; gap: 12px;
-    }
-    
-    .timeline-bar {
-      height: 36px; background: var(--secondary-blue); border-radius: 8px;
-      border: 1px solid var(--border-color); display: flex; align-items: center;
-      justify-content: center; font-size: 12px; color: var(--primary-blue); font-weight: 600;
-    }
-
-    /* DANH SÁCH CÔNG CỤ EDIT */
-    .tools-scroll-list {
-      display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px;
-    }
-    .tool-item-btn {
-      flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 6px;
-      background: var(--bg-light); border: 1px solid var(--border-color);
-      padding: 10px 14px; border-radius: 12px; cursor: pointer; min-width: 80px;
-    }
-    .tool-item-btn i { font-size: 20px; color: var(--primary-blue); }
-    .tool-item-btn span { font-size: 11px; font-weight: 600; color: var(--text-dark); }
-
-    /* BOTTOM NAV MAIN */
+    /* ĐIỀU HƯỚNG 4 CỘT BÊN DƯỚI */
     .bottom-nav {
-      position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-white);
-      border-top: 1px solid var(--border-color); display: flex; justify-content: space-around;
-      padding: 10px 0; z-index: 100;
+      display: flex !important; justify-content: space-around !important;
+      padding: 6px 0 !important; background: #ffffff !important;
+      border-top: 1px solid #e2e8f0 !important; position: fixed !important; bottom: 0; left: 0; right: 0; z-index: 100;
     }
     .nav-btn {
-      background: none; border: none; display: flex; flex-direction: column;
-      align-items: center; gap: 4px; color: var(--text-gray); font-size: 11px; cursor: pointer;
+      flex: 1; display: flex !important; flex-direction: column !important;
+      align-items: center !important; font-size: 10px !important; background: none !important;
+      border: none !important; color: #64748b !important; cursor: pointer;
     }
-    .nav-btn.active { color: var(--primary-blue); font-weight: 600; }
-    .nav-btn i { font-size: 18px; }
+    .nav-btn.active { color: #0066ff !important; font-weight: bold; }
+    .nav-btn span:first-child { font-size: 16px; margin-bottom: 2px; }
+
+    /* GIAO DIỆN EDIT STUDIO FULLSCREEN */
+    .edit-fullscreen-modal {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: #090d16; z-index: 99999; flex-direction: column; overflow: hidden;
+    }
+    .edit-fullscreen-modal.active { display: flex; }
+
+    .studio-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 16px; background: #ffffff; border-bottom: 1px solid #e2e8f0;
+    }
+    .studio-header-left { display: flex; align-items: center; gap: 12px; }
+    .studio-close-btn {
+      background: #f1f5f9; color: #0f172a; border: none;
+      width: 32px; height: 32px; border-radius: 50%; font-size: 16px;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .studio-title { font-size: 15px; font-weight: 700; color: #0f172a; }
+    .studio-export-btn-top {
+      background: #0066ff; color: #ffffff; border: none;
+      padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+
+    .studio-viewport {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      background: #0f172a; position: relative; padding: 12px; overflow: hidden;
+    }
+    .studio-video-box {
+      max-width: 100%; max-height: 100%; aspect-ratio: 9/16; background: #1e293b;
+      border-radius: 12px; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; color: #94a3b8; position: relative; border: 2px dashed #334155;
+    }
+    .subtitle-overlay-box {
+      position: absolute; bottom: 20px; left: 10px; right: 10px; text-align: center;
+      background: rgba(0,0,0,0.7); color: #ffd700; padding: 8px 12px;
+      border-radius: 8px; font-size: 13px; font-weight: 700; display: none;
+    }
+
+    .studio-bottom-panel {
+      background: #ffffff; border-top-left-radius: 20px; border-top-right-radius: 20px;
+      padding: 16px; display: flex; flex-direction: column; gap: 12px;
+    }
+    .studio-tools-list { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; justify-content: center; }
+    .studio-tool-card {
+      flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 6px;
+      background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 16px;
+      border-radius: 12px; cursor: pointer; min-width: 90px;
+    }
+    .studio-tool-card i { font-size: 18px; color: #0066ff; }
+    .studio-tool-card span { font-size: 11px; font-weight: 600; color: #0f172a; }
   </style>
 </head>
+
 <body>
 
-  <!-- HEADER TRANG CHỦ -->
-  <header class="app-header">
-    <div class="brand">
-      <div class="brand-logo"><i class="fa-solid fa-download"></i></div>
-      <div class="brand-title">
-        <h1>CHINH <span>VIDEO</span></h1>
-        <p>Downloader & AI Editor</p>
-      </div>
-    </div>
-  </header>
+  <!-- ================= MÀN HÌNH ĐĂNG NHẬP ================= -->
+  <div id="authScreen" class="auth-overlay" style="display: flex;">
+    <div class="auth-card">
+      <h2>CHINH LY VIDEO</h2>
+      <p class="auth-subtitle">Đăng nhập tài khoản</p>
 
-  <!-- NỘI DUNG TRANG CHỦ -->
-  <div class="container">
-    <div class="card">
-      <h3 style="margin-bottom: 10px; font-size: 15px;">Tải Video Ngay</h3>
-      <input type="text" class="input-box" placeholder="Dán link TikTok, YouTube, Douyin...">
-      <button class="btn-blue"><i class="fa-solid fa-arrow-down"></i> Tải Video</button>
+      <div class="input-group" style="margin-bottom: 15px;">
+        <input type="text" id="authUsername" placeholder="Nhập tên tài khoản (ID)..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box;" />
+      </div>
+      
+      <div class="input-group" style="margin-bottom: 10px; position: relative;">
+        <input type="password" id="authPassword" placeholder="Nhập mật khẩu..." style="width: 100%; padding: 12px; padding-right: 45px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box;" />
+        <span id="eyeIcon" onclick="togglePasswordVisibility('authPassword', 'eyeIcon')" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px;">👁️</span>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+        <button type="button" onclick="handleForgotPassword()" style="background: none; border: none; color: #075de0; cursor: pointer; font-size: 14px; padding: 0;">Quên mật khẩu?</button>
+      </div>
+
+      <button class="btn btn-primary full-width" onclick="handleLogin()" style="margin-bottom: 10px; width: 100%; padding: 12px;">Đăng nhập</button>
+      <button class="btn btn-light full-width" onclick="showAuthSection('register')" style="width: 100%; padding: 12px;">Tạo tài khoản mới</button>
+      
+      <p id="authMessage" class="auth-msg" style="color: #e53e3e; text-align: center; margin-top: 15px; font-size: 14px;"></p>
     </div>
   </div>
 
-  <!-- GIAO DIỆN CHỈNH SỬA EDIT FULLSCREEN (MỞ KHI BẤM NÚT EDIT) -->
-  <div id="edit-modal" class="edit-fullscreen-page">
-    
-    <!-- EDIT HEADER VỚI NÚT 'X' QUAY LẠI -->
-    <div class="edit-header">
-      <div class="edit-title">
-        <i class="fa-solid fa-scissors" style="color: var(--primary-blue);"></i> Studio Biên Tập Video
+  <!-- ================= MÀN HÌNH ĐĂNG KÝ ================= -->
+  <div id="registerSection" class="auth-overlay" style="display: none;">
+    <div class="auth-card">
+      <h2>CHINH LY VIDEO</h2>
+      <p class="auth-subtitle">Tạo tài khoản mới</p>
+
+      <div class="input-group" style="margin-bottom: 15px;">
+        <input type="text" id="regUsername" placeholder="Tạo tên tài khoản (ID không trùng)..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box;" />
       </div>
-      <button class="close-edit-btn" onclick="closeEditStudio()"><i class="fa-solid fa-xmark"></i></button>
+      
+      <div class="input-group" style="margin-bottom: 20px; position: relative;">
+        <input type="password" id="regPassword" placeholder="Tạo mật khẩu..." style="width: 100%; padding: 12px; padding-right: 45px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box;" />
+        <span id="regEyeIcon" onclick="togglePasswordVisibility('regPassword', 'regEyeIcon')" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px;">👁️</span>
+      </div>
+
+      <button class="btn btn-primary full-width" onclick="handleSignup()" style="margin-bottom: 10px; width: 100%; padding: 12px;">Tạo tài khoản</button>
+      <button class="btn btn-light full-width" onclick="showAuthSection('login')" style="width: 100%; padding: 12px;">Quay lại Đăng nhập</button>
+      
+      <p id="regMessage" class="auth-msg" style="text-align: center; margin-top: 15px; font-size: 14px;"></p>
+    </div>
+  </div>
+
+  <!-- ================= MÀN HÌNH KHÓA ================= -->
+  <div id="lockScreen" class="lock-overlay" style="display: none;">
+    <div class="lock-card">
+      <div class="lock-header">
+        <div class="lock-icon-bg">
+          <svg class="lock-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 40px; height: 40px;">
+            <path d="M12 2C9.24 2 7 4.24 7 7V10H6C4.9 10 4 10.9 4 12V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V12C20 10.9 19.1 10 18 10H17V7C17 4.24 14.76 2 12 2ZM12 4C13.66 4 15 5.34 15 7V10H9V7C9 5.34 10.34 4 12 4ZM12 14C12.83 14 13.5 14.67 13.5 15.5C13.5 16.04 13.21 16.51 12.78 16.77V19H11.22V16.77C10.79 16.51 10.5 16.04 10.5 15.5C10.5 14.67 11.17 14 12 14Z" fill="#0066FF"/>
+          </svg>
+        </div>
+        <h2>CHINH LY VIDEO</h2>
+        <p class="subtitle">Phiên bản thử nghiệm V2</p>
+      </div>
+
+      <div class="id-card">
+        <div class="id-header">
+          <span class="user-icon">👤</span>
+          <span class="id-title">MÃ ĐỊNH DANH CỦA BẠN</span>
+        </div>
+        <div class="id-body">
+          <div class="id-number" id="userIdDisplay">VN-151120</div>
+          <button class="btn-copy" onclick="copyUserId()"><span>📋</span> Sao chép</button>
+        </div>
+        <div class="status-expired"><span class="dot-red">●</span> Hết hạn dùng thử (14/14 ngày)</div>
+      </div>
+
+      <div class="alert-card">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-content">
+          <h3>Bạn đã hết thời gian truy cập</h3>
+          <p>Thời gian dùng thử 14 ngày miễn phí đã kết thúc. Vui lòng liên hệ Quản trị viên để được cấp quyền mở khóa.</p>
+        </div>
+      </div>
+
+      <div class="contact-card">
+        <div class="contact-header"><span>💬</span><span class="contact-title">LIÊN HỆ MỞ KHÓA</span></div>
+        <a href="https://www.tiktok.com/@tyty_99_4" target="_blank" class="btn-tiktok">
+          <div class="tiktok-brand"><span>TikTok: @tyty_99_4</span></div>
+          <span>↗</span>
+        </a>
+      </div>
+
+      <div style="text-align: center; margin-top: 15px;">
+        <button onclick="handleLogout()" style="background: none; border: none; color: #666; cursor: pointer; text-decoration: underline; font-size: 13px;">Đăng xuất tài khoản</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= NỘI DUNG ỨNG DỤNG CHÍNH ================= -->
+  <div id="mainAppContent" style="display: none;">
+    <div class="app">
+      <!-- HEADER THU NHỎ, TÊN CHINH LY MÀU TRẮNG HỒNG & HIỆN TRẠNG PRO/14 NGÀY -->
+      <header>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="logo" style="background: #0066ff; color: #fff;">▶</div>
+          <div class="brand-title-custom">
+            <h1>CHINH LY VIDEO</h1>
+            <p id="proStatusText">Dùng thử 14 ngày</p>
+          </div>
+        </div>
+        <button class="header-settings" id="headerSettings" aria-label="Mở cài đặt" style="background:none; border:none; font-size:18px; cursor:pointer;">⚙</button>
+      </header>
+
+      <main>
+        <!-- TRANG CHỦ -->
+        <section class="section active" id="home">
+          <div class="hero">
+            <h2>Tải video từ mọi nền tảng <span>nhanh chóng và dễ dàng</span></h2>
+            <p>Chinh Ly Video Downloader giúp bạn xử lý liên kết video từ YouTube, Douyin, Bilibili và TikTok ngay trên điện thoại.</p>
+          </div>
+
+          <div class="card">
+            <div class="platform-heading">
+              <div class="section-icon">▣</div>
+              <div>
+                <h3>Chọn nền tảng</h3>
+                <p class="muted">Nhận diện tự động từ liên kết</p>
+              </div>
+            </div>
+
+            <div class="platforms">
+              <div class="platform" data-platform="YouTube"><span class="platform-icon">▶️</span><span>YouTube</span></div>
+              <div class="platform" data-platform="Douyin"><span class="platform-icon">🎵</span><span>Douyin</span></div>
+              <div class="platform" data-platform="Bilibili"><span class="platform-icon">📺</span><span>Bilibili</span></div>
+              <div class="platform" data-platform="TikTok"><span class="platform-icon">🎶</span><span>TikTok</span></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="input-title">
+              <div class="section-icon">🔗</div>
+              <div>
+                <h3>Dán liên kết video</h3>
+                <p class="muted">Hỗ trợ 4 nền tảng · Tối đa 500 ký tự</p>
+              </div>
+            </div>
+
+            <textarea id="videoUrl" maxlength="500" rows="3" placeholder="Dán liên kết video vào đây..."></textarea>
+
+            <div class="input-info">
+              <span id="platformName">Nền tảng: Chưa xác định</span>
+              <span id="charCount">0/500</span>
+            </div>
+
+            <div class="actions">
+              <button class="btn btn-light" id="pasteBtn">▣ Dán liên kết</button>
+              <button class="btn" id="clearBtn">✕ Xóa</button>
+            </div>
+
+            <button class="btn btn-primary full-width download-main" id="downloadBtn" disabled>
+              ↓ &nbsp; Bắt đầu tải video &nbsp; →
+            </button>
+
+            <div class="status" id="statusBox" role="status"></div>
+          </div>
+        </section>
+
+        <!-- TRÌNH CHỈNH SỬA / TÁCH NHẠC -->
+        <section class="section" id="editor">
+          <div class="page-heading">
+            <h2>Chỉnh sửa & Tách nhạc ✂️</h2>
+            <p>Trích xuất âm thanh & Biên tập phụ đề video chuyên nghiệp.</p>
+          </div>
+
+          <div class="card" style="margin-bottom: 15px;">
+            <button class="btn btn-primary full-width" onclick="openStudioModal()" style="width: 100%; padding: 14px; font-weight: bold; background: #0066FF;">
+              🚀 MỞ STUDIO BIÊN TẬP VIDEO (FULLSCREEN)
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="utility-icon">🎵</div>
+            <h3>Tách âm thanh từ Link Video</h3>
+            <p class="description">Dán đường dẫn video TikTok hoặc YouTube chứa bài hát bạn yêu thích để hệ thống bóc tách thành file nhạc MP3.</p>
+            
+            <input type="text" id="extractUrl" placeholder="Dán link video chứa nhạc tại đây..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin: 15px 0; box-sizing: border-box;" />
+            
+            <button class="btn btn-primary full-width" onclick="handleExtractAudio()" style="width: 100%; padding: 12px;">Tách lấy file nhạc (MP3)</button>
+            
+            <div id="extractStatus" style="margin-top: 15px; font-size: 14px; text-align: center;"></div>
+          </div>
+        </section>
+
+        <!-- CÀI ĐẶT -->
+        <section class="section" id="settings">
+          <div class="page-heading">
+            <h2>Cài đặt ⚙️</h2>
+            <p>Quản lý trải nghiệm sử dụng Chinh Ly Video.</p>
+          </div>
+
+          <div class="card">
+            <h3>Thông tin tài khoản</h3>
+            <div class="setting-row" style="padding: 10px 0; border-bottom: 1px solid #eee;">
+              <div>
+                <p style="margin: 0; font-weight: bold;">Tên tài khoản (ID)</p>
+                <small id="settingUsername" style="color: #666;">--</small>
+              </div>
+            </div>
+            <div class="setting-row" style="padding: 10px 0;">
+              <div>
+                <p style="margin: 0; font-weight: bold;">Mã định danh ứng dụng</p>
+                <small id="settingUniqueId" style="color: #075de0; font-weight: bold;">VN-......</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Hỗ trợ & Mở khóa</h3>
+            <a href="https://www.tiktok.com/@tyty_99_4" target="_blank" class="btn btn-light full-width" style="display: block; text-align: center; text-decoration: none; margin-bottom: 10px; padding: 12px;">Liên hệ Admin TikTok</a>
+            <button class="btn btn-primary full-width" onclick="handleLogout()" style="background: #e53e3e; width: 100%; padding: 12px;">Đăng xuất tài khoản</button>
+          </div>
+        </section>
+      </main>
     </div>
 
-    <!-- KHUNG XEM TRƯỚC VIDEO (16:9 & 9:16) -->
-    <div class="video-viewport">
-      <div id="video-box" class="video-container-box">
-        <i class="fa-solid fa-file-video" style="font-size: 40px; margin-bottom: 10px;"></i>
-        <p style="font-size: 13px;">Nhấn vào để chọn Video từ máy</p>
-        <input type="file" id="video-file-input" accept="video/*" hidden onchange="handleVideoUpload(this)">
+    <!-- THANH ĐIỀU HƯỚNG 4 CỘT -->
+    <nav class="bottom-nav" aria-label="Điều hướng chính">
+      <button class="nav-btn active" data-target="home"><span>⌂</span>Trang chủ</button>
+      <button class="nav-btn" data-target="empty1"><span></span></button>
+      <button class="nav-btn" data-target="editor" onclick="openStudioModal()"><span>✂</span>Chỉnh sửa</button>
+      <button class="nav-btn" data-target="settings"><span>⚙</span>Cài đặt</button>
+    </nav>
+  </div>
+
+  <!-- ================= GIAO DIỆN EDIT STUDIO FULLSCREEN ================= -->
+  <div id="studioModal" class="edit-fullscreen-modal">
+    <div class="studio-header">
+      <div class="studio-header-left">
+        <button class="studio-close-btn" onclick="closeStudioModal()">✕</button>
+        <div class="studio-title">Studio Biên Tập Video</div>
+      </div>
+      <div class="studio-header-right">
+        <button class="studio-export-btn-top" onclick="alert('Đang tiến hành xuất video...')">Xuất video</button>
+      </div>
+    </div>
+
+    <div class="studio-viewport">
+      <div id="studioVideoBox" class="studio-video-box" onclick="document.getElementById('studioVideoInput').click()">
+        <i class="fa-solid fa-file-video" style="font-size: 36px; margin-bottom: 8px;"></i>
+        <p style="font-size: 12px;">00:00-00:16</p>
+        <p style="font-size: 12px; color: #64748b;">Nhấn vào để chọn Video từ máy</p>
+        <input type="file" id="studioVideoInput" accept="video/*" hidden onchange="onVideoSelected(this)">
         
-        <!-- PHỤ ĐỀ DỊCH AI MẪU KHỚP VIDEO -->
-        <div id="sub-preview" class="subtitle-overlay" style="display:none;">
-          [Gemini AI Sub]: Chào mừng bạn đến với ứng dụng!
+        <div id="studioSubOverlay" class="subtitle-overlay-box">
+          [Gemini AI]: Phụ đề tiếng Việt tự động khớp video!
         </div>
       </div>
     </div>
 
-    <!-- THANH CÔNG CỤ DƯỚI CÙNG (MÀU SÁNG + XANH) -->
-    <div class="edit-bottom-panel">
-      <!-- TIMELINE CẮT VIDEO -->
-      <div class="timeline-bar">
-        <i class="fa-solid fa-film" style="margin-right: 8px;"></i> Timeline Cắt Video: 00:00 - 00:15
+    <div class="studio-bottom-panel">
+      <div style="background: #f1f5f9; padding: 8px 12px; border-radius: 8px; text-align: center; font-size: 12px; color: #0066ff; font-weight: 600;">
+        <i class="fa-solid fa-film"></i> Timeline Cắt Video: 00:00 - 00:15
       </div>
 
-      <!-- DANH SÁCH CÔNG CỤ -->
-      <div class="tools-scroll-list">
-        <div class="tool-item-btn" onclick="triggerGeminiTranslate()">
+      <div class="studio-tools-list">
+        <div class="studio-tool-card" onclick="simulateGeminiTranslate()">
           <i class="fa-solid fa-language"></i>
           <span>Dịch phụ đề AI</span>
         </div>
-        <div class="tool-item-btn" onclick="toggleAspectRatio()">
-          <i class="fa-solid fa-mobile-screen"></i>
-          <span>Tỷ lệ 9:16 / 16:9</span>
-        </div>
-        <div class="tool-item-btn">
+        <div class="studio-tool-card" onclick="alert('Mở công cụ cắt video')">
           <i class="fa-solid fa-scissors"></i>
           <span>Cắt video</span>
         </div>
-        <div class="tool-item-btn">
+        <div class="studio-tool-card" onclick="alert('Thêm văn bản tùy chỉnh')">
           <i class="fa-solid fa-font"></i>
           <span>Thêm văn bản</span>
         </div>
-        <div class="tool-item-btn">
-          <i class="fa-solid fa-bolt"></i>
-          <span>Tốc độ</span>
-        </div>
       </div>
-
-      <button class="btn-blue" style="margin-top: 4px;">
-        <i class="fa-solid fa-export"></i> Xuất Video Đã Sửa
-      </button>
     </div>
-
   </div>
 
-  <!-- BOTTOM NAVIGATION -->
-  <nav class="bottom-nav">
-    <button class="nav-btn active" onclick="closeEditStudio()">
-      <i class="fa-solid fa-house"></i>
-      <span>Trang chủ</span>
-    </button>
-    <button class="nav-btn" onclick="openEditStudio()">
-      <i class="fa-solid fa-scissors"></i>
-      <span>Chỉnh sửa</span>
-    </button>
-  </nav>
-
-  <!-- JAVASCRIPT ĐIỀU HƯỚNG VÀ XỬ LÝ -->
+  <!-- JAVASCRIPT XỬ LÝ -->
   <script>
-    // Mở trang Studio Edit Full màn hình
-    function openEditStudio() {
-      document.getElementById('edit-modal').classList.add('active');
+    function openStudioModal() {
+      document.getElementById('studioModal').classList.add('active');
     }
-
-    // Nút X đóng Studio quay lại trang chủ
-    function closeEditStudio() {
-      document.getElementById('edit-modal').classList.remove('active');
+    function closeStudioModal() {
+      document.getElementById('studioModal').classList.remove('active');
     }
-
-    // Đổi tỷ lệ khung hình video 9:16 <-> 16:9
-    function toggleAspectRatio() {
-      const box = document.getElementById('video-box');
-      box.classList.toggle('aspect-16-9');
-    }
-
-    // Giả lập tính năng Gửi tới Gemini AI dịch phụ đề Tiếng Trung sang Việt
-    function triggerGeminiTranslate() {
-      const sub = document.getElementById('sub-preview');
-      sub.style.display = 'block';
-      sub.innerText = "Đang gửi yêu cầu tới Gemini AI dịch & tối ưu phụ đề Trung -> Việt...";
-      
+    function simulateGeminiTranslate() {
+      const box = document.getElementById('studioSubOverlay');
+      box.style.display = 'block';
+      box.innerText = "Đang gửi sang Gemini AI dịch và tối ưu từ ngữ tiếng Trung -> Việt...";
       setTimeout(() => {
-        sub.innerText = "Gemini AI: Phụ đề Tiếng Việt đã khớp với khẩu hình!";
+        box.innerText = "Gemini AI: Dịch thành công & Khớp độ dài video!";
       }, 1500);
     }
-
-    // Chọn video từ điện thoại
-    document.getElementById('video-box').addEventListener('click', function() {
-      document.getElementById('video-file-input').click();
-    });
-
-    function handleVideoUpload(input) {
-      if (input.files && input.files[0]) {
-        alert("Đã chọn video: " + input.files[0].name + ". Sẵn sàng biên tập!");
+    function onVideoSelected(input) {
+      if(input.files && input.files[0]) {
+        alert("Đã nhận file: " + input.files[0].name);
       }
     }
   </script>
 
+  <script src="script.js"></script>
 </body>
 </html>
