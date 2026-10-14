@@ -18,20 +18,22 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedPlatform = "";
   let manualPlatform = false;
 
-  // Hàm bóc tách link thông minh từ văn bản rác / chia sẻ từ app (Douyin, TikTok,...)
-  function extractUrlFromText(text) {
+  // Hàm bóc tách link thông minh và làm sạch triệt để các ký tự rác xung quanh
+  function extractCleanUrl(text) {
     if (!text) return "";
-    // Biểu thức chính quy (Regex) tìm kiếm định dạng URL http/https
+    // Tìm kiếm định dạng URL bắt đầu bằng http:// hoặc https://
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const matches = text.match(urlRegex);
     if (matches && matches.length > 0) {
-      // Lấy URL đầu tiên tìm thấy và loại bỏ các ký tự rác thừa ở cuối nếu có
-      let cleanUrl = matches[0].replace(/[)]+$/, '');
+      let rawUrl = matches[0];
+      // Cắt bỏ các ký tự rác, dấu câu thừa thường dính ở cuối link chia sẻ từ app
+      let cleanUrl = rawUrl.replace(/[:;,\.!?\s]+$/, '').replace(/["']+$/, '');
       return cleanUrl;
     }
     return text.trim();
   }
 
+  // Nhận diện 7 nền tảng theo yêu cầu
   function detectPlatform(value) {
     if (!value.trim()) return "";
     let url;
@@ -42,11 +44,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (!["http:", "https:"].includes(url.protocol)) return "";
     const host = url.hostname.toLowerCase().replace(/^www\./, "");
-    if (host.includes("youtube.com") || host === "youtu.be") return "YouTube";
+    
+    if (host.includes("kuaishou.com") || host.includes("kuaishou.cn") || host.includes("v.kuaishou")) return "Kuaishou";
     if (host.includes("douyin.com")) return "Douyin";
     if (host.includes("bilibili.com") || host === "b23.tv") return "Bilibili";
     if (host.includes("tiktok.com")) return "TikTok";
-    return "";
+    if (host.includes("youtube.com") || host === "youtu.be") return "YouTube";
+    if (host.includes("facebook.com") || host.includes("fb.watch") || host.includes("fb.com")) return "Facebook";
+    if (host.includes("instagram.com")) return "Instagram";
+    
+    return "Unsupported"; // Không thuộc các nền tảng cho phép
   }
 
   function showStatus(message, type = "info") {
@@ -74,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updatePlatformCards(name) {
     platforms.forEach((item) => {
-      const isActive = item.dataset.platform === name;
+      const isActive = item.dataset.platform.toLowerCase() === name.toLowerCase();
       item.classList.toggle("active", isActive);
     });
   }
@@ -82,26 +89,26 @@ document.addEventListener("DOMContentLoaded", () => {
   function updatePlatformName(name) {
     selectedPlatform = name;
     if (platformName) {
-      platformName.textContent = name ? `Nền tảng: ${name}` : "Nền tảng: Chưa xác định";
+      platformName.textContent = name && name !== "Unsupported" ? `Nền tảng: ${name}` : "Nền tảng: Chưa xác định";
     }
     updatePlatformCards(name);
   }
 
   function updateInput() {
     if (!videoUrl) return;
-    let value = videoUrl.value;
+    let rawValue = videoUrl.value;
     
-    // Tự động bóc tách link ngay khi người dùng nhập hoặc dán văn bản thô
-    const extracted = extractUrlFromText(value);
-    if (extracted && extracted !== value.trim()) {
-      videoUrl.value = extracted;
-      value = extracted;
+    // Tự động bóc tách link sạch từ văn bản thô ngay khi nhập
+    const cleanUrl = extractCleanUrl(rawValue);
+    if (cleanUrl && cleanUrl !== rawValue.trim()) {
+      videoUrl.value = cleanUrl;
+      rawValue = cleanUrl;
     }
 
-    const trimmedValue = value.trim();
+    const trimmedValue = rawValue.trim();
 
     if (charCount) {
-      charCount.textContent = `${value.length}/${MAX_LENGTH}`;
+      charCount.textContent = `${rawValue.length}/${MAX_LENGTH}`;
     }
 
     if (!trimmedValue) {
@@ -113,17 +120,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const detected = detectPlatform(trimmedValue);
+    
+    if (detected === "Unsupported") {
+      updatePlatformName("");
+      if (downloadBtn) downloadBtn.disabled = true;
+      showStatus("Link không được hỗ trợ hoặc không hợp lệ!", "error");
+      return;
+    }
+
     if (detected) {
-      if (!manualPlatform || selectedPlatform === detected) {
-        updatePlatformName(detected);
-      }
+      updatePlatformName(detected);
+      if (downloadBtn) downloadBtn.disabled = false;
+      clearStatus();
     } else {
       updatePlatformName("");
+      if (downloadBtn) downloadBtn.disabled = true;
+      showStatus("Vui lòng nhập đường dẫn video hợp lệ.", "error");
     }
-    
-    // Kích hoạt sáng nút tải video khi có nội dung hợp lệ
-    if (downloadBtn) downloadBtn.disabled = false;
-    clearStatus();
   }
 
   if (videoUrl) {
@@ -132,9 +145,8 @@ document.addEventListener("DOMContentLoaded", () => {
       updateInput();
     });
     
-    // Hỗ trợ xử lý tự động ngay khi paste sự kiện clipboard
     videoUrl.addEventListener("paste", () => {
-      setTimeout(updateInput, 50);
+      setTimeout(updateInput, 60);
     });
   }
 
@@ -163,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ========================================
-  // XỬ LÝ GỌI API GENDOWNLOAD & HIỂN THỊ TRỰC TIẾP
+  // GỌI API TẢI VIDEO & PHÁT TRỰC TIẾP
   // ========================================
   const videoContainer = document.getElementById("videoContainer");
   const resultVideoPlayer = document.getElementById("resultVideoPlayer");
@@ -225,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       } catch (error) {
         console.error(error);
-        showStatus(`Lỗi: ${error.message || "Không thể xử lý yêu cầu."}`, "error");
+        showStatus(`Lỗi: ${error.message || "Link không được hỗ trợ hoặc không thể xử lý."}`, "error");
       } finally {
         downloadBtn.disabled = false;
       }
@@ -435,5 +447,4 @@ function handleExtractAudio() {
     status.style.color = "#168344";
     status.innerText = "Trích xuất thành công! File nhạc đã sẵn sàng tải về.";
   }, 2000);
-      }
-          
+                                                      }
