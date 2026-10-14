@@ -7,10 +7,9 @@
       }
 
       downloadBtn.disabled = true;
-      showStatus("Đang kết nối API để trích xuất video...", "info");
+      showStatus("Đang kết nối API để phân tích video...", "info");
 
       try {
-        // Gửi dạng URLSearchParams (form-urlencoded) để tránh lỗi 422
         const formData = new URLSearchParams();
         formData.append("url", urlValue);
 
@@ -32,7 +31,7 @@
         if (data && (data.formats || data.url || data.link)) {
           showStatus("Phân tích thành công!", "success");
 
-          // Tạo khung chứa thông tin video & danh sách chất lượng nếu chưa có
+          // Tạo khung chứa thông tin video & danh sách chất lượng ngay dưới nút tải
           let resultBox = document.getElementById("vdResultBox");
           if (!resultBox) {
             resultBox = document.createElement("div");
@@ -51,7 +50,7 @@
             formatsOptionsHTML += `<option value="${index}">${label}${ext}</option>`;
           });
 
-          // Đổ dữ liệu vào khung giao diện
+          // Đổ dữ liệu lên giao diện để người dùng chọn chất lượng
           resultBox.innerHTML = `
             <div style="text-align: center; margin-bottom: 12px;">
               ${data.thumbnail ? `<img src="${data.thumbnail}" alt="Thumbnail" style="max-width: 100%; max-height: 180px; border-radius: 10px; object-fit: cover;">` : ""}
@@ -60,7 +59,7 @@
             </div>
 
             <div style="margin-bottom: 12px;">
-              <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #333;">Chọn chất lượng/định dạng:</label>
+              <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #333;">Chọn chất lượng / định dạng:</label>
               <select id="selectFormatQuality" style="width: 100%; padding: 10px; border: 1px solid #d5deec; border-radius: 8px; background: #fff; font-size: 14px;">
                 ${formatsOptionsHTML}
               </select>
@@ -71,7 +70,7 @@
             </button>
           `;
 
-          // Gắn sự kiện bấm nút tải xuống theo định dạng đã chọn trong danh sách
+          // Khi người dùng bấm nút xác nhận tải trong khung, lúc đó mới mở link tải file
           document.getElementById("confirmDownloadBtn").addEventListener("click", () => {
             const selectedIdx = document.getElementById("selectFormatQuality").value;
             const chosenFormat = currentFormatsData[selectedIdx];
