@@ -11,7 +11,7 @@
       if (videoContainer) videoContainer.style.display = "none";
 
       try {
-        // Gửi dữ liệu dạng JSON chuẩn để tránh lỗi 415
+        // Gọi chuẩn cấu trúc JSON theo đúng tài liệu GenDownload API
         const response = await fetch("https://gendownload.com/api/extract", {
           method: "POST",
           headers: {
@@ -26,6 +26,8 @@
         }
 
         const data = await response.json();
+        
+        // GenDownload trả về mảng formats, lấy đường dẫn tải từ phần tử đầu tiên hoặc data.url
         const videoStreamUrl = data.url || data.link || (data.formats && data.formats[0]?.url);
 
         if (data && videoStreamUrl) {
@@ -47,7 +49,7 @@
             videoContainer.scrollIntoView({ behavior: "smooth" });
           }
         } else {
-          throw new Error("Không thể trích xuất video từ liên kết này.");
+          throw new Error("Không thể trích xuất video từ liên kết này hoặc link không được hỗ trợ.");
         }
       } catch (error) {
         console.error(error);
