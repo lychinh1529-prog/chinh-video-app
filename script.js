@@ -10,12 +10,17 @@
       showStatus("Đang kết nối API để trích xuất video...", "info");
 
       try {
+        // Thử gửi dạng FormData (chuẩn form-urlencoded) để tránh lỗi 422
+        const formData = new URLSearchParams();
+        formData.append("url", urlValue);
+
         const response = await fetch("https://gendownload.com/api/extract", {
           method: "POST",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Accept": "application/json"
           },
-          body: JSON.stringify({ url: urlValue })
+          body: formData.toString()
         });
 
         if (!response.ok) {
@@ -24,11 +29,9 @@
 
         const data = await response.json();
 
-        // Kiểm tra dữ liệu phản hồi từ GenDownload API
         if (data && (data.formats || data.url || data.link)) {
           showStatus("Trích xuất thành công! Đang mở liên kết tải...", "success");
           
-          // Lấy đường dẫn tải trực tiếp từ kết quả API trả về
           const downloadLink = data.url || data.link || (data.formats && data.formats[0]?.url);
           
           if (downloadLink) {
