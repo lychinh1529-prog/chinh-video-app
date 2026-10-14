@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f8ff">
+  <title>Tải video - Chinh Video Downloader</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f8ff;
+      color: #182235;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: white;
+      border-bottom: 1px solid #e3eaf5;
+    }
+
+    header a {
+      color: #2563eb;
+      text-decoration: none;
+      font-size: 24px;
+    }
+
+    header h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    main {
+      padding: 18px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 4px 18px #1725540d;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      background: #e0eaff;
+      color: #2455c3;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      line-height: 1.6;
+      color: #64748b;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #d5deec;
+      border-radius: 12px;
+      font-size: 15px;
+      margin: 12px 0;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: 0;
+      border-radius: 12px;
+      background: #2563eb;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .secondary {
+      margin-top: 10px;
+      background: #e8efff;
+      color: #2455c3;
+    }
+
+    .notice {
+      margin-top: 18px;
+      padding: 14px;
+      background: #f1f5f9;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #475569;
+    }
+
+    iframe {
+      width: 100%;
+      height: 70vh;
+      min-height: 450px;
+      border: 0;
+      border-radius: 14px;
+      background: white;
+      margin-top: 18px;
+    }
+
+    #toolFrame {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <a href="index.html" aria-label="Quay lại">‹</a>
+    <h2>Chinh Video Downloader</h2>
+  </header>
+
+  <main>
+    <section class="card">
+      <span class="badge">CÔNG CỤ TẢI VIDEO</span>
+
+      <h1>Tải video của bạn</h1>
+
+      <p>
+        Dán liên kết video để bắt đầu.
+        Công cụ tải video được cung cấp bởi SnapVideoTools.
+      </p>
+
+      <input
+        id="videoUrl"
+        type="url"
+        placeholder="Dán liên kết video vào đây..."
+        autocomplete="url"
+      >
+
+      <button onclick="openTool()">
+        Tiếp tục tải video
+      </button>
+
+      <button class="secondary" onclick="copyLink()">
+        Sao chép liên kết
+      </button>
+
+      <div class="notice">
+        <strong>Lưu ý:</strong> Trang tải video bên ngoài có thể có
+        quảng cáo và các giới hạn riêng. Chỉ tải nội dung bạn được
+        phép sử dụng.
+      </div>
+    </section>
+
+    <iframe
+      id="toolFrame"
+      title="Công cụ tải video SnapVideoTools"
+      referrerpolicy="strict-origin-when-cross-origin">
+    </iframe>
+
+    <p id="status" role="status"></p>
+  </main>
+
+  <script>
+    const TOOL_URL = "https://snapvideotools.com/vi";
+
+    function openTool() {
+      const input = document.getElementById("videoUrl");
+      const status = document.getElementById("status");
+      const url = input.value.trim();
+
+      if (!url) {
+        status.textContent = "Bạn hãy dán liên kết video trước nhé.";
+        input.focus();
+        return;
+      }
+
+      try {
+        const parsed = new URL(url);
+
+        if (!["http:", "https:"].includes(parsed.protocol)) {
+          throw new Error("Liên kết không hợp lệ");
+        }
+      } catch {
+        status.textContent = "Liên kết chưa hợp lệ. Hãy kiểm tra lại.";
+        return;
+      }
+
+      const frame = document.getElementById("toolFrame");
+
+      frame.src = TOOL_URL;
+      frame.style.display = "block";
+
+      status.textContent =
+        "Đã thử mở công cụ bên dưới. Nếu không hiển thị, hãy dùng nút mở trang riêng.";
+
+      let fallback = document.getElementById("fallback");
+
+      if (!fallback) {
+        fallback = document.createElement("button");
+        fallback.id = "fallback";
+        fallback.className = "secondary";
+        fallback.style.marginTop = "12px";
+        fallback.textContent = "Mở SnapVideoTools";
+        fallback.onclick = () => {
+          window.open(TOOL_URL, "_blank", "noopener,noreferrer");
+        };
+
+        frame.after(fallback);
+      }
+
+      frame.scrollIntoView({ behavior: "smooth" });
+    }
+
+    async function copyLink() {
+      const input = document.getElementById("videoUrl");
+      const status = document.getElementById("status");
+      const url = input.value.trim();
+
+      if (!url) {
+        status.textContent = "Bạn chưa nhập liên kết.";
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(url);
+        status.textContent = "Đã sao chép liên kết!";
+      } catch {
+        input.select();
+        status.textContent = "Hãy sao chép liên kết đã chọn.";
+      }
+    }
+  </script>
+</body>
+    </html>
