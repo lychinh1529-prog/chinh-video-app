@@ -131,16 +131,60 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // ========================================
+  // TÍCH HỢP API TẢI VIDEO (GENDOWNLOAD)
+  // ========================================
+  let currentFormatsData = [];
+
   if (downloadBtn) {
     downloadBtn.addEventListener("click", async () => {
       const urlValue = videoUrl ? videoUrl.value.trim() : "";
-      if (!urlValue) return;
+      if (!urlValue) {
+        showStatus("Vui lòng nhập liên kết video cần tải!", "error");
+        return;
+      }
+
       downloadBtn.disabled = true;
-      showStatus("Đang xử lý tải video...", "info");
-      setTimeout(() => {
-        showStatus("Tải xuống hoàn tất!", "success");
+      showStatus("Đang phân tích liên kết với máy chủ...", "info");
+
+      try {
+        const response = await fetch("https://gendownload.com/api/extract", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ url: urlValue })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Lỗi kết nối API (${response.status})`);
+        }
+
+        const data = await response.json();
+
+        if (data && (data.formats || data.url || data.title)) {
+          showStatus("Phân tích thành công! Đang chuyển hướng tải xuống...", "success");
+          
+          currentFormatsData = data.formats || [data];
+          
+          // Lấy link tải từ định dạng đầu tiên hoặc định dạng mặc định
+          const targetUrl = currentFormatsData[0]?.url || data.url;
+          if (targetUrl) {
+            setTimeout(() => {
+              window.open(targetUrl, "_blank");
+            }, 1000);
+          } else {
+            alert("Không tìm thấy đường dẫn tải trực tiếp.");
+          }
+        } else {
+          throw new Error("Không thể trích xuất thông tin từ liên kết này.");
+        }
+      } catch (error) {
+        console.error(error);
+        showStatus(`Lỗi: ${error.message || "Không thể xử lý liên kết."}`, "error");
+      } finally {
         downloadBtn.disabled = false;
-      }, 1500);
+      }
     });
   }
 
@@ -347,4 +391,4 @@ function handleExtractAudio() {
     status.style.color = "#168344";
     status.innerText = "Trích xuất thành công! File nhạc đã sẵn sàng tải về.";
   }, 2000);
-        }
+}
