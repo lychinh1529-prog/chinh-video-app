@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ========================================
-  // KẾT NỐI API GENDOWNLOAD VỚI HEADERS GIẢ LẬP ĐẦY ĐỦ
+  // KẾT NỐI API GENDOWNLOAD & XỬ LÝ TẢI NGẦM BLOB
   // ========================================
   const videoContainer = document.getElementById("videoContainer");
   const resultVideoPlayer = document.getElementById("resultVideoPlayer");
@@ -186,7 +186,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (videoContainer) videoContainer.style.display = "none";
 
       try {
-        // Giả lập đầy đủ Headers để máy chủ định danh chính xác request từ trình duyệt hợp lệ
         const response = await fetch("https://gendownload.com/api/extract", {
           method: "POST",
           headers: {
@@ -218,7 +217,36 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             if (directDownloadLink) {
-              directDownloadLink.href = videoStreamUrl;
+              const newDownloadBtn = directDownloadLink.cloneNode(true);
+              directDownloadLink.parentNode.replaceChild(newDownloadBtn, directDownloadLink);
+
+              newDownloadBtn.addEventListener("click", async (e) => {
+                e.preventDefault();
+                showStatus("Đang tải file xuống điện thoại, vui lòng đợi...", "info");
+
+                try {
+                  const fileRes = await fetch(videoStreamUrl);
+                  const blob = await fileRes.blob();
+                  const blobUrl = window.URL.createObjectURL(blob);
+
+                  const a = document.createElement("a");
+                  a.style.display = "none";
+                  a.href = blobUrl;
+                  
+                  const safeTitle = (data.title || "video").replace(/[^a-zA-Z0-9à-ỹÀ-Ỹ ]/g, "").trim().substring(0, 30);
+                  a.download = `${safeTitle || "chinh_video"}.mp4`;
+                  
+                  document.body.appendChild(a);
+                  a.click();
+                  
+                  window.URL.revokeObjectURL(blobUrl);
+                  a.remove();
+                  showStatus("Đã lưu video thành công vào thiết bị!", "success");
+                } catch (err) {
+                  console.error("Lỗi tải ngầm Blob:", err);
+                  window.open(videoStreamUrl, "_blank");
+                }
+              });
             }
 
             videoContainer.style.display = "block";
@@ -439,4 +467,5 @@ function handleExtractAudio() {
     status.style.color = "#168344";
     status.innerText = "Trích xuất thành công! File nhạc đã sẵn sàng tải về.";
   }, 2000);
-}
+  }
+          
