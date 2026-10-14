@@ -119,7 +119,7 @@
 
   <!-- ================= NỘI DUNG ỨNG DỤNG CHÍNH ================= -->  
   <div id="mainAppContent" style="display: block !important;">  
-    <div class="app">  
+    <div class="app" style="padding-bottom: 75px;">  
       <header>  
         <div class="logo">▶</div>  
         <div>  
@@ -179,8 +179,24 @@
               ↓ &nbsp; Bắt đầu tải video &nbsp; →  
             </button>  
 
-            <div class="status" id="statusBox" role="status"></div>  
+            <!-- Khung hiển thị phát video trực tiếp trong app -->
+            <div id="videoContainer" class="card" style="display: none; margin-top: 15px; text-align: center; background: #f8fafc; border: 1px solid #e2e8f0;">
+              <h4 id="videoTitle" style="margin: 0 0 10px; font-size: 14px; color: #182235; overflow-wrap: anywhere;"></h4>
+              <video id="resultVideoPlayer" controls style="width: 100%; max-height: 250px; border-radius: 8px; background: #000; outline: none;"></video>
+              <div style="margin-top: 12px;">
+                <a id="directDownloadLink" href="#" download="video.mp4" class="btn btn-primary full-width" style="display: block; text-align: center; text-decoration: none; padding: 11px; background: #16a34a; border-radius: 8px; color: #fff; font-weight: bold; font-size: 14px;">
+                  💾 Lưu video về máy
+                </a>
+              </div>
+            </div>
+
+            <div class="status" id="statusBox" role="status" style="margin-top: 12px;"></div>  
           </div>  
+
+          <!-- Dòng nguồn theo yêu cầu mới -->
+          <div style="text-align: center; margin: 20px 0 10px; color: #94a3b8; font-size: 12px; line-height: 1.5;">
+            Download video được cung cấp bởi GemDownioad
+          </div>
         </section>  
 
         <!-- TRÌNH CHỈNH SỬA (CHỨA TOÀN BỘ GIAO DIỆN STUDIO PRO NGUYÊN BẢN) -->  
@@ -261,7 +277,7 @@
             </button>
           </div>
 
-          <!-- Nội dung tách nhạc cũ (sẽ ẩn đi khi vào giao diện studio) -->
+          <!-- Nội dung tách nhạc cũ -->
           <div class="card">
             <div class="utility-icon">🎵</div>
             <h3>Tách âm thanh từ Link Video</h3>
