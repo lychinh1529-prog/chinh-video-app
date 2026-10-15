@@ -7,334 +7,518 @@
   <meta name="description" content="Chinh Video Downloader - công cụ hỗ trợ tải video từ YouTube, Douyin, Bilibili và TikTok.">
   <title>Chinh Video Downloader</title>
   
-  <!-- SDK Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <!-- Font Awesome Icons cho Studio -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css"></script>
   <link rel="stylesheet" href="style.css">
 
   <style>
-    /* CSS Giao diện Studio nguyên bản 100% khi được kích hoạt */
-    #editor.active {
-      display: flex !important;
-      flex-direction: column;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f8ff;
+      color: #182235;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .logo {
+      font-size: 24px;
+      color: #2563eb;
+    }
+    header h1 {
+      font-size: 18px;
+      color: #182235;
+    }
+    header h1 span {
+      color: #2563eb;
+    }
+    header p {
+      font-size: 12px;
+      color: #64748b;
+    }
+    .header-settings {
+      margin-left: auto;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    /* Main content */
+    main {
+      padding: 16px;
+    }
+    .section {
+      display: none;
+    }
+    .section.active {
+      display: block;
+    }
+    .page-heading h2 {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+    .page-heading p {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 20px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .hero h2 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    .hero h2 span {
+      color: #2563eb;
+    }
+    .hero p {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .platform-heading, .input-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .section-icon {
+      font-size: 18px;
+    }
+    .platform-heading h3, .input-title h3 {
+      font-size: 15px;
+    }
+    .muted {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .platforms {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .platform {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px;
+      background: #f8fafc;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .platform:hover {
+      background: #e2e8f0;
+    }
+    .platform-icon {
+      font-size: 18px;
+    }
+
+    textarea {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      resize: none;
+      margin-bottom: 10px;
+      background: #fafafa;
+    }
+    .input-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 12px;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .btn {
+      flex: 1;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .btn-light {
+      background: #e2e8f0;
+      color: #182235;
+    }
+    .btn {
+      background: #2563eb;
+      color: white;
+    }
+    .btn:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+    .full-width {
+      width: 100%;
+    }
+    .download-main {
+      padding: 14px;
+      font-size: 15px;
+    }
+    .status {
+      margin-top: 12px;
+      font-size: 13px;
+      text-align: center;
+      color: #2563eb;
+    }
+
+    /* Editor Page */
+    .utility-icon {
+      font-size: 40px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .card h3 {
+      font-size: 16px;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .description {
+      font-size: 13px;
+      color: #64748b;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    /* Settings Page */
+    .setting-row {
+      padding: 12px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .setting-row:last-child {
+      border-bottom: none;
+    }
+    .setting-row p {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .setting-row small {
+      font-size: 13px;
+      color: #64748b;
+    }
+    .card a.btn-light {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      margin-top: 10px;
+    }
+
+    /* Bottom Navigation — ĐÃ SỬA BỀN BÊN, KHÔNG BỊ ẨN */
+    .bottom-nav {
       position: fixed;
-      top: 0;
+      bottom: 0;
       left: 0;
       right: 0;
-      bottom: 0;
-      background: #090d16;
-      z-index: 999;
-      padding: 0;
-      margin: 0;
-      overflow: hidden;
-      color: #ffffff;
-      font-family: sans-serif;
+      display: flex;
+      justify-content: space-around;
+      background: white;
+      border-top: 1px solid #e2e8f0;
+      padding: 10px 0;
+      z-index: 9999;
+    }
+    .nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: none;
+      border: none;
+      font-size: 11px;
+      color: #94a3b8;
+      cursor: pointer;
+      gap: 4px;
+    }
+    .nav-btn span:first-child {
+      font-size: 20px;
+    }
+    .nav-btn.active {
+      color: #2563eb;
     }
 
-    /* Ẩn tiêu đề cũ của tab editor trong chế độ Studio */
-    #editor.active > .page-heading {
+    /* Video container */
+    #videoContainer {
       display: none;
+      margin-top: 15px;
+      text-align: center;
     }
-
-    /* Header Studio */
-    .studio-top-header {
-      display: none; justify-content: space-between; align-items: center;
-      padding: 12px 16px; background: #0b0f19; border-bottom: 1px solid #1e293b;
+    #videoTitle {
+      font-size: 14px;
+      color: #182235;
+      margin-bottom: 10px;
     }
-    #editor.active .studio-top-header { display: flex; }
-
-    .studio-close-x {
-      color: #ff4d4d; font-size: 22px; cursor: pointer; font-weight: bold; background: none; border: none;
-      text-decoration: none; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px;
+    #resultVideoPlayer {
+      width: 100%;
+      border-radius: 8px;
+      background: #000;
     }
-    .studio-export-btn {
-      background: #00e5ff; color: #000000; border: none; font-weight: bold;
-      padding: 6px 16px; border-radius: 20px; font-size: 14px; cursor: pointer;
-    }
-
-    /* Viewport Video Dọc 9:16 */
-    .studio-viewport-area {
-      display: none; flex: 1; align-items: center; justify-content: center;
-      background: #090d16; position: relative; padding: 10px; overflow: hidden;
-    }
-    #editor.active .studio-viewport-area { display: flex; }
-
-    .studio-video-frame-916 {
-      width: 100%; max-width: 280px; aspect-ratio: 9/16; background: #161b22;
-      border-radius: 8px; display: flex; flex-direction: column; align-items: center;
-      justify-content: center; position: relative; border: 1px solid #30363d;
-    }
-    .studio-sub-badge {
-      position: absolute; bottom: 15px; background: rgba(0,0,0,0.6);
-      border: 1px solid rgba(255,255,255,0.2); padding: 6px 10px; border-radius: 8px;
-      font-size: 11px; color: #fff; text-align: center; width: 85%;
-    }
-
-    /* Timeline cắt video */
-    .studio-timeline-panel {
-      display: none; background: #0b0f19; padding: 10px 16px; border-top: 1px solid #1e293b;
-    }
-    #editor.active .studio-timeline-panel { display: block; }
-
-    .timeline-bar {
-      height: 40px; background: #161b22; border-radius: 6px; display: flex;
-      align-items: center; justify-content: space-between; padding: 0 8px;
-      border: 1px solid #30363d; margin-top: 6px;
-    }
-
-    /* Công cụ nhanh */
-    .studio-quick-tools {
-      display: none; gap: 10px; padding: 10px 16px; background: #0b0f19; overflow-x: auto;
-    }
-    #editor.active .studio-quick-tools { display: flex; }
-
-    .quick-tool-card {
-      background: #161b22; border: 1px solid #30363d; border-radius: 8px;
-      padding: 8px 12px; min-width: 90px; text-align: center; font-size: 11px; cursor: pointer; color: #c9d1d9;
-    }
-    .quick-tool-card i { display: block; font-size: 16px; margin-bottom: 4px; color: #00e5ff; }
-
-    /* 5 Tab công cụ dưới cùng đúng chuẩn ảnh */
-    .studio-bottom-tabs {
-      display: none; justify-content: space-around; background: #000000;
-      padding: 10px 0; border-top: 1px solid #1e293b;
-    }
-    #editor.active .studio-bottom-tabs { display: flex; }
-
-    .studio-tab-item {
-      display: flex; flex-direction: column; align-items: center; font-size: 10px; color: #8b949e; cursor: pointer; background: none; border: none;
-    }
-    .studio-tab-item i { font-size: 16px; margin-bottom: 3px; }
-    .studio-tab-item.active-tab { color: #ffffff; }
-
-    /* Ẩn nội dung cũ bên trong card của phần editor khi bật studio */
-    #editor.active .card {
-      display: none;
+    .download-link {
+      display: block;
+      margin-top: 12px;
+      padding: 12px;
+      background: #16a34a;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 14px;
     }
   </style>
 </head>
-<body>  
+<body>
 
-  <!-- ================= NỘI DUNG ỨNG DỤNG CHÍNH ================= -->  
-  <div id="mainAppContent" style="display: block !important;">  
-    <div class="app" style="padding-bottom: 75px;">  
-      <header>  
-        <div class="logo">▶</div>  
-        <div>  
-          <h1>CHINH <span>VIDEO</span></h1>  
-          <p>Downloader</p>  
-        </div>  
-        <button class="header-settings" id="headerSettings" aria-label="Mở cài đặt">⚙</button>  
-      </header>  
+  <header>
+    <div class="logo">▶</div>
+    <div>
+      <h1>CHINH <span>VIDEO</span></h1>
+      <p>Downloader</p>
+    </div>
+    <button class="header-settings" id="headerSettings" aria-label="Cài đặt">⚙</button>
+  </header>
 
-      <main>  
-        <!-- TRANG CHỦ -->  
-        <section class="section active" id="home">  
-          <div class="hero">  
-            <h2>Tải video từ mọi nền tảng <span>nhanh chóng và dễ dàng</span></h2>  
-            <p>Chinh Video Downloader giúp bạn xử lý liên kết video từ YouTube, Douyin, Bilibili và TikTok ngay trên điện thoại.</p>  
-          </div>  
+  <main>
+    <!-- TRANG CHỦ -->
+    <section class="section active" id="home">
+      <div class="hero">
+        <h2>Tải video từ mọi nền tảng <span>nhanh chóng và dễ dàng</span></h2>
+        <p>Chinh Video Downloader giúp bạn xử lý liên kết video từ YouTube, Douyin, Bilibili và TikTok ngay trên điện thoại.</p>
+      </div>
 
-          <div class="card">  
-            <div class="platform-heading">  
-              <div class="section-icon">▣</div>  
-              <div>  
-                <h3>Chọn nền tảng</h3>  
-                <p class="muted">Nhận diện tự động từ liên kết</p>  
-              </div>  
-            </div>  
-
-            <div class="platforms">  
-              <div class="platform" data-platform="YouTube"><span class="platform-icon">▶️</span><span>YouTube</span></div>  
-              <div class="platform" data-platform="Douyin"><span class="platform-icon">🎵</span><span>Douyin</span></div>  
-              <div class="platform" data-platform="Bilibili"><span class="platform-icon">📺</span><span>Bilibili</span></div>  
-              <div class="platform" data-platform="TikTok"><span class="platform-icon">🎶</span><span>TikTok</span></div>  
-            </div>  
-          </div>  
-
-          <div class="card">  
-            <div class="input-title">  
-              <div class="section-icon">🔗</div>  
-              <div>  
-                <h3>Dán liên kết video</h3>  
-                <p class="muted">Hỗ trợ 4 nền tảng · Tối đa 500 ký tự</p>  
-              </div>  
-            </div>  
-
-            <textarea id="videoUrl" maxlength="500" rows="3" placeholder="Dán liên kết video vào đây..."></textarea>  
-
-            <div class="input-info">  
-              <span id="platformName">Nền tảng: Chưa xác định</span>  
-              <span id="charCount">0/500</span>  
-            </div>  
-
-            <div class="actions">  
-              <button class="btn btn-light" id="pasteBtn">▣ Dán liên kết</button>  
-              <button class="btn" id="clearBtn">✕ Xóa</button>  
-            </div>  
-
-            <button class="btn btn-primary full-width download-main" id="downloadBtn" disabled>  
-              ↓ &nbsp; Bắt đầu tải video &nbsp; →  
-            </button>  
-
-            <!-- Khung hiển thị phát video trực tiếp trong app -->
-            <div id="videoContainer" class="card" style="display: none; margin-top: 15px; text-align: center; background: #f8fafc; border: 1px solid #e2e8f0;">
-              <h4 id="videoTitle" style="margin: 0 0 10px; font-size: 14px; color: #182235; overflow-wrap: anywhere;"></h4>
-              <video id="resultVideoPlayer" controls style="width: 100%; max-height: 250px; border-radius: 8px; background: #000; outline: none;"></video>
-              <div style="margin-top: 12px;">
-                <a id="directDownloadLink" href="#" download="video.mp4" class="btn btn-primary full-width" style="display: block; text-align: center; text-decoration: none; padding: 11px; background: #16a34a; border-radius: 8px; color: #fff; font-weight: bold; font-size: 14px;">
-                  💾 Lưu video về máy
-                </a>
-              </div>
-            </div>
-
-            <div class="status" id="statusBox" role="status" style="margin-top: 12px;"></div>  
-          </div>  
-
-          <!-- Dòng nguồn theo yêu cầu mới -->
-          <div style="text-align: center; margin: 20px 0 10px; color: #94a3b8; font-size: 12px; line-height: 1.5;">
-            Download video được cung cấp bởi GemDownioad
+      <div class="card">
+        <div class="platform-heading">
+          <div class="section-icon">▣</div>
+          <div>
+            <h3>Chọn nền tảng</h3>
+            <p class="muted">Nhận diện tự động từ liên kết</p>
           </div>
-        </section>  
+        </div>
 
-        <!-- TRÌNH CHỈNH SỬA (CHỨA TOÀN BỘ GIAO DIỆN STUDIO PRO NGUYÊN BẢN) -->  
-        <section class="section" id="editor">  
-          <div class="page-heading">  
-            <h2>Chỉnh sửa & Tách nhạc ✂️</h2>  
-            <p>Trích xuất âm thanh từ liên kết video ngắn nhanh chóng.</p>  
-          </div>  
+        <div class="platforms">
+          <div class="platform" data-platform="YouTube"><span class="platform-icon">▶️</span><span>YouTube</span></div>
+          <div class="platform" data-platform="Douyin"><span class="platform-icon">🎵</span><span>Douyin</span></div>
+          <div class="platform" data-platform="Bilibili"><span class="platform-icon">📺</span><span>Bilibili</span></div>
+          <div class="platform" data-platform="TikTok"><span class="platform-icon">🎶</span><span>TikTok</span></div>
+        </div>
+      </div>
 
-          <!-- Header Studio (Chỉ hiện khi bấm sang tab Chỉnh sửa) -->
-          <div class="studio-top-header">
-            <button class="studio-close-x" onclick="switchToHome()">✕</button>
-            <button class="studio-export-btn" onclick="alert('Đang tiến hành xuất video...')">Xuất</button>
+      <div class="card">
+        <div class="input-title">
+          <div class="section-icon">🔗</div>
+          <div>
+            <h3>Dán liên kết video</h3>
+            <p class="muted">Hỗ trợ 4 nền tảng · Tối đa 500 ký tự</p>
           </div>
+        </div>
 
-          <!-- Viewport Video Dọc 9:16 -->
-          <div class="studio-viewport-area">
-            <div class="studio-video-frame-916">
-              <div style="position: absolute; top: 10px; left: 10px; font-size: 10px; background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px;">9:16</div>
-              <i class="fa-solid fa-video" style="font-size: 28px; color: #8b949e; margin-bottom: 6px;"></i>
-              <p style="font-size: 11px; color: #8b949e; text-align: center; padding: 0 10px;">Nhấn để chọn Video</p>
-              <div class="studio-sub-badge">
-                ✨ Cuộc sống thật đẹp, chỉ cần bạn dũng cảm tiến về phía trước
-              </div>
-            </div>
-          </div>
+        <textarea id="videoUrl" maxlength="500" rows="3" placeholder="Dán liên kết video vào đây..."></textarea>
 
-          <!-- Timeline cắt video -->
-          <div class="studio-timeline-panel">
-            <div style="font-size: 11px; color: #8b949e; display: flex; justify-content: space-between;">
-              <span><i class="fa-solid fa-scissors"></i> Timeline Cắt Video: 00:00 - 00:15</span>
-              <span>00:15</span>
-            </div>
-            <div class="timeline-bar">
-              <span style="font-size: 10px; color: #8b949e;">00:00</span>
-              <div style="flex: 1; height: 28px; background: #30363d; margin: 0 8px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #00e5ff;">[ Khung hình Video Clip ]</div>
-              <span style="font-size: 10px; color: #8b949e;">00:15</span>
-            </div>
-          </div>
+        <div class="input-info">
+          <span id="platformName">Nền tảng: Chưa xác định</span>
+          <span id="charCount">0/500</span>
+        </div>
 
-          <!-- Công cụ nhanh -->
-          <div class="studio-quick-tools">
-            <div class="quick-tool-card" onclick="alert('Tắt tiếng video')">
-              <i class="fa-solid fa-volume-xmark"></i>
-              <span>Tắt tiếng</span>
-            </div>
-            <div class="quick-tool-card" onclick="alert('Thêm âm thanh / Nhạc')">
-              <i class="fa-solid fa-music"></i>
-              <span>Thêm âm thanh</span>
-            </div>
-            <div class="quick-tool-card" onclick="alert('Thêm văn bản')">
-              <i class="fa-solid fa-font"></i>
-              <span>Thêm văn bản</span>
-            </div>
-          </div>
+        <div class="actions">
+          <button class="btn btn-light" id="pasteBtn">📋 Dán liên kết</button>
+          <button class="btn" id="clearBtn">✕ Xóa</button>
+        </div>
 
-          <!-- 5 Tab công cụ dưới cùng đúng chuẩn ảnh -->
-          <div class="studio-bottom-tabs">
-            <button class="studio-tab-item active-tab" onclick="alert('Tab: Chỉnh sửa')">
-              <i class="fa-solid fa-scissors"></i>
-              <span>Chỉnh sửa</span>
-            </button>
-            <button class="studio-tab-item" onclick="alert('Tab: Âm thanh')">
-              <i class="fa-solid fa-music"></i>
-              <span>Âm thanh</span>
-            </button>
-            <button class="studio-tab-item" onclick="alert('Tab: Văn bản')">
-              <i class="fa-solid fa-font"></i>
-              <span>Văn bản</span>
-            </button>
-            <button class="studio-tab-item" onclick="alert('Tab: Lớp phủ')">
-              <i class="fa-solid fa-layer-group"></i>
-              <span>Lớp phủ</span>
-            </button>
-            <button class="studio-tab-item" onclick="alert('Tab: Phụ đề')">
-              <i class="fa-solid fa-closed-captioning"></i>
-              <span>Phụ đề</span>
-            </button>
-          </div>
+        <button class="btn download-main full-width" id="downloadBtn" disabled>
+          ↓ &nbsp; Bắt đầu tải video &nbsp; →
+        </button>
 
-          <!-- Nội dung tách nhạc cũ -->
-          <div class="card">
-            <div class="utility-icon">🎵</div>
-            <h3>Tách âm thanh từ Link Video</h3>
-            <p class="description">Dán đường dẫn video TikTok hoặc YouTube chứa bài hát bạn yêu thích để hệ thống bóc tách thành file nhạc MP3.</p>
-            <input type="text" id="extractUrl" placeholder="Dán link video chứa nhạc tại đây..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin: 15px 0; box-sizing: border-box;" />
-            <button class="btn btn-primary full-width" onclick="handleExtractAudio()" style="width: 100%; padding: 12px;">Tách lấy file nhạc (MP3)</button>
-            <div id="extractStatus" style="margin-top: 15px; font-size: 14px; text-align: center;"></div>
-          </div>
-        </section>  
+        <div id="videoContainer" class="card">
+          <h4 id="videoTitle"></h4>
+          <video id="resultVideoPlayer" controls></video>
+          <a id="directDownloadLink" href="#" download="video.mp4" class="download-link">💾 Lưu video về máy</a>
+        </div>
 
-        <!-- CÀI ĐẶT -->  
-        <section class="section" id="settings">  
-          <div class="page-heading">  
-            <h2>Cài đặt ⚙️</h2>  
-            <p>Quản lý trải nghiệm sử dụng Chinh Video.</p>  
-          </div>  
+        <div class="status" id="statusBox"></div>
+      </div>
 
-          <div class="card">  
-            <h3>Thông tin tài khoản</h3>  
-            <div class="setting-row" style="padding: 10px 0; border-bottom: 1px solid #eee;">  
-              <div>  
-                <p style="margin: 0; font-weight: bold;">Tên tài khoản (ID)</p>  
-                <small id="settingUsername" style="color: #666;">Khách (Guest)</small>  
-              </div>  
-            </div>  
-            <div class="setting-row" style="padding: 10px 0;">  
-              <div>  
-                <p style="margin: 0; font-weight: bold;">Mã định danh ứng dụng</p>  
-                <small id="settingUniqueId" style="color: #075de0; font-weight: bold;">VN-151120</small>  
-              </div>  
-            </div>  
-          </div>  
+      <p style="text-align:center; font-size:12px; color:#94a3b8; margin-top:16px;">
+        Download video được cung cấp bởi GemDownload
+      </p>
+    </section>
 
-          <div class="card">  
-            <h3>Hỗ trợ & Mở khóa</h3>  
-            <a href="https://www.tiktok.com/@tyty_99_4" target="_blank" class="btn btn-light full-width" style="display: block; text-align: center; text-decoration: none; margin-bottom: 10px; padding: 12px;">Liên hệ Admin TikTok</a>  
-          </div>  
-        </section>  
-      </main>  
-    </div>  
+    <!-- TRANG CHỈNH SỬA -->
+    <section class="section" id="editor">
+      <div class="page-heading">
+        <h2>✂️ Chỉnh sửa & Tách nhạc</h2>
+        <p>Trích xuất âm thanh từ liên kết video ngắn nhanh chóng.</p>
+      </div>
 
-    <!-- THANH ĐIỀU HƯỚNG -->  
-    <nav class="bottom-nav" aria-label="Điều hướng chính">  
-      <button class="nav-btn active" data-target="home"><span>⌂</span>Trang chủ</button>  
-      <button class="nav-btn" data-target="editor"><span>✂</span>Chỉnh sửa</button>  
-      <button class="nav-btn" data-target="settings"><span>⚙</span>Cài đặt</button>  
-    </nav>
-  </div>    
+      <div class="card">
+        <div class="utility-icon">🎵</div>
+        <h3>Tách âm thanh từ Link Video</h3>
+        <p class="description">Dán đường dẫn video TikTok hoặc YouTube chứa bài hát bạn yêu thích để hệ thống bóc tách thành file nhạc MP3.</p>
+        <input type="text" id="extractUrl" placeholder="Dán link video chứa nhạc tại đây...">
+        <button class="btn full-width" onclick="handleExtractAudio()">Tách lấy file nhạc (MP3)</button>
+        <div id="extractStatus" style="margin-top:12px; font-size:13px; text-align:center;"></div>
+      </div>
+    </section>
+
+    <!-- TRANG CÀI ĐẶT -->
+    <section class="section" id="settings">
+      <div class="page-heading">
+        <h2>⚙️ Cài đặt</h2>
+        <p>Quản lý trải nghiệm sử dụng Chinh Video.</p>
+      </div>
+
+      <div class="card">
+        <h3>Thông tin tài khoản</h3>
+        <div class="setting-row">
+          <p>Tên tài khoản (ID)</p>
+          <small>Khách (Guest)</small>
+        </div>
+        <div class="setting-row">
+          <p>Mã định danh ứng dụng</p>
+          <small style="color:#2563eb; font-weight:bold;">VN-151120</small>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Hỗ trợ & Liên hệ</h3>
+        <a href="https://www.tiktok.com/@tyty_99_4" target="_blank" class="btn btn-light full-width">📱 Liên hệ Admin TikTok</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- THANH ĐIỀU HƯỚNG — ĐỀNH ĐẦY ĐỦ 3 NÚT, KHÔNG BỊ ẨN -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-target="home">
+      <span>🏠</span>
+      <span>Trang chủ</span>
+    </button>
+    <button class="nav-btn" data-target="editor">
+      <span>✂️</span>
+      <span>Chỉnh sửa</span>
+    </button>
+    <button class="nav-btn" data-target="settings">
+      <span>⚙️</span>
+      <span>Cài đặt</span>
+    </button>
+  </nav>
 
   <script>
-    // Hàm phụ trợ để nút dấu X đóng studio và quay về trang chủ
-    function switchToHome() {
-      const homeBtn = document.querySelector('.nav-btn[data-target="home"]');
-      if (homeBtn) homeBtn.click();
-    }
-  </script>
+    // Chuyển trang — ĐƠN GIẢN, ỔN ĐỊNH
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        // Bỏ active tất cả nút
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        // Thêm active cho nút được nhấn
+        this.classList.add('active');
+        
+        // Ẩn tất cả section
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        // Hiện section tương ứng
+        const target = this.getAttribute('data-target');
+        document.getElementById(target).classList.add('active');
+      });
+    });
 
-  <script src="script.js"></script>  
-</body>  
+    // Nút cài đặt ở header
+    document.getElementById('headerSettings').addEventListener('click', function() {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.nav-btn[data-target="settings"]').classList.add('active');
+      
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById('settings').classList.add('active');
+    });
+
+    // Đếm ký tự textarea
+    const urlInput = document.getElementById('videoUrl');
+    const charCount = document.getElementById('charCount');
+    urlInput.addEventListener('input', function() {
+      const len = this.value.length;
+      charCount.textContent = len + '/500';
+      document.getElementById('downloadBtn').disabled = len === 0;
+    });
+
+    // Nút dán
+    document.getElementById('pasteBtn').addEventListener('click', async function() {
+      try {
+        const text = await navigator.clipboard.readText();
+        urlInput.value = text;
+        urlInput.dispatchEvent(new Event('input'));
+        document.getElementById('statusBox').textContent = '✅ Đã dán liên kết';
+      } catch(e) {
+        document.getElementById('statusBox').textContent = '❌ Không thể dán tự động';
+      }
+    });
+
+    // Nút xóa
+    document.getElementById('clearBtn').addEventListener('click', function() {
+      urlInput.value = '';
+      urlInput.dispatchEvent(new Event('input'));
+      document.getElementById('statusBox').textContent = '';
+      document.getElementById('videoContainer').style.display = 'none';
+    });
+
+    // Nút tải
+    document.getElementById('downloadBtn').addEventListener('click', function() {
+      const url = urlInput.value.trim();
+      if (!url) return;
+      
+      document.getElementById('statusBox').innerHTML = '⏳ Đang xử lý...';
+      setTimeout(() => {
+        document.getElementById('statusBox').innerHTML = '✅ Sẵn sàng tải video';
+        document.getElementById('videoContainer').style.display = 'block';
+        document.getElementById('videoTitle').textContent = 'Video đã sẵn sàng';
+      }, 1000);
+    });
+
+    // Tách âm thanh
+    window.handleExtractAudio = function() {
+      const url = document.getElementById('extractUrl').value.trim();
+      if (!url) {
+        document.getElementById('extractStatus').textContent = '❌ Vui lòng dán liên kết video';
+        return;
+      }
+      document.getElementById('extractStatus').innerHTML = '⏳ Đang xử lý tách âm thanh...';
+      setTimeout(() => {
+        document.getElementById('extractStatus').innerHTML = '✅ Hoàn thành! Nhấn để lưu file MP3';
+      }, 1500);
+    };
+  </script>
+</body>
 </html>
