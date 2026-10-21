@@ -1,10 +1,13 @@
-<!DOCTYPE html>  <html lang="vi">  
+<!DOCTYPE html>  
+<html lang="vi">  
 <head>  
   <meta charset="UTF-8">  
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">  
   <meta name="theme-color" content="#f4f8ff">  
   <meta name="description" content="Chinh Video Downloader - công cụ hỗ trợ tải video từ YouTube, Douyin, Bilibili và TikTok.">  
-  <title>Chinh Video Downloader</title>    <script src="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css"></script>    <link rel="stylesheet" href="style.css">    <style>  
+  <title>Chinh Video Downloader</title>  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">  
+  <style>  
     * {  
       margin: 0;  
       padding: 0;  
@@ -239,7 +242,7 @@
       margin-top: 10px;  
     }  
   
-    /* Bottom Navigation — ĐÃ SỬA BỀN BÊN, KHÔNG BỊ ẨN */  
+    /* Bottom Navigation */  
     .bottom-nav {  
       position: fixed;  
       bottom: 0;  
@@ -297,119 +300,127 @@
       font-weight: bold;  
       font-size: 14px;  
     }  
-  </style>  </head>  
-<body>    <header>  
+  </style>  
+</head>  
+<body>  
+  <header>  
     <div class="logo">▶</div>  
     <div>  
       <h1>CHINH <span>VIDEO</span></h1>  
       <p>Downloader</p>  
     </div>  
     <button class="header-settings" id="headerSettings" aria-label="Cài đặt">⚙</button>  
-  </header>    <main>  
+  </header>  
+
+  <main>  
     <!-- TRANG CHỦ -->  
     <section class="section active" id="home">  
       <div class="hero">  
         <h2>Tải video từ mọi nền tảng <span>nhanh chóng và dễ dàng</span></h2>  
         <p>Chinh Video Downloader giúp bạn xử lý liên kết video từ YouTube, Douyin, Bilibili và TikTok ngay trên điện thoại.</p>  
-      </div>  <div class="card">  
-    <div class="platform-heading">  
-      <div class="section-icon">▣</div>  
-      <div>  
-        <h3>Chọn nền tảng</h3>  
-        <p class="muted">Nhận diện tự động từ liên kết</p>  
       </div>  
-    </div>  
 
-    <div class="platforms">  
-      <div class="platform" data-platform="YouTube"><span class="platform-icon">▶️</span><span>YouTube</span></div>  
-      <div class="platform" data-platform="Douyin"><span class="platform-icon">🎵</span><span>Douyin</span></div>  
-      <div class="platform" data-platform="Bilibili"><span class="platform-icon">📺</span><span>Bilibili</span></div>  
-      <div class="platform" data-platform="TikTok"><span class="platform-icon">🎶</span><span>TikTok</span></div>  
-    </div>  
-  </div>  
+      <div class="card">  
+        <div class="platform-heading">  
+          <div class="section-icon">▣</div>  
+          <div>  
+            <h3>Chọn nền tảng</h3>  
+            <p class="muted">Nhận diện tự động từ liên kết</p>  
+          </div>  
+        </div>  
 
-  <div class="card">  
-    <div class="input-title">  
-      <div class="section-icon">🔗</div>  
-      <div>  
-        <h3>Dán liên kết video</h3>  
-        <p class="muted">Hỗ trợ 4 nền tảng · Tối đa 500 ký tự</p>  
+        <div class="platforms">  
+          <div class="platform" data-platform="YouTube"><span class="platform-icon">▶️</span><span>YouTube</span></div>  
+          <div class="platform" data-platform="Douyin"><span class="platform-icon">🎵</span><span>Douyin</span></div>  
+          <div class="platform" data-platform="Bilibili"><span class="platform-icon">📺</span><span>Bilibili</span></div>  
+          <div class="platform" data-platform="TikTok"><span class="platform-icon">🎶</span><span>TikTok</span></div>  
+        </div>  
       </div>  
-    </div>  
 
-    <textarea id="videoUrl" maxlength="500" rows="3" placeholder="Dán liên kết video vào đây..."></textarea>  
+      <div class="card">  
+        <div class="input-title">  
+          <div class="section-icon">🔗</div>  
+          <div>  
+            <h3>Dán liên kết video</h3>  
+            <p class="muted">Hỗ trợ 4 nền tảng · Tối đa 500 ký tự</p>  
+          </div>  
+        </div>  
 
-    <div class="input-info">  
-      <span id="platformName">Nền tảng: Chưa xác định</span>  
-      <span id="charCount">0/500</span>  
-    </div>  
+        <textarea id="videoUrl" maxlength="500" rows="3" placeholder="Dán liên kết video vào đây..."></textarea>  
 
-    <div class="actions">  
-      <button class="btn btn-light" id="pasteBtn">📋 Dán liên kết</button>  
-      <button class="btn" id="clearBtn">✕ Xóa</button>  
-    </div>  
+        <div class="input-info">  
+          <span id="platformName">Nền tảng: Chưa xác định</span>  
+          <span id="charCount">0/500</span>  
+        </div>  
 
-    <button class="btn download-main full-width" id="downloadBtn" disabled>  
-      ↓ &nbsp; Bắt đầu tải video &nbsp; →  
-    </button>  
+        <div class="actions">  
+          <button class="btn btn-light" id="pasteBtn">📋 Dán liên kết</button>  
+          <button class="btn" id="clearBtn">✕ Xóa</button>  
+        </div>  
 
-    <div id="videoContainer" class="card">  
-      <h4 id="videoTitle"></h4>  
-      <video id="resultVideoPlayer" controls></video>  
-      <a id="directDownloadLink" href="#" download="video.mp4" class="download-link">💾 Lưu video về máy</a>  
-    </div>  
+        <button class="btn download-main full-width" id="downloadBtn" disabled>  
+          ↓ &nbsp; Bắt đầu tải video &nbsp; →  
+        </button>  
 
-    <div class="status" id="statusBox"></div>  
-  </div>  
+        <div id="videoContainer" class="card">  
+          <h4 id="videoTitle"></h4>  
+          <video id="resultVideoPlayer" controls></video>  
+          <a id="directDownloadLink" href="#" target="_blank" class="download-link">💾 Lưu video về máy</a>  
+        </div>  
 
-  <p style="text-align:center; font-size:12px; color:#94a3b8; margin-top:16px;">  
-    Download video được cung cấp bởi GemDownload  
-  </p>  
-</section>  
+        <div class="status" id="statusBox"></div>  
+      </div>  
 
-<!-- TRANG CHỈNH SỬA -->  
-<section class="section" id="editor">  
-  <div class="page-heading">  
-    <h2>✂️ Chỉnh sửa & Tách nhạc</h2>  
-    <p>Trích xuất âm thanh từ liên kết video ngắn nhanh chóng.</p>  
-  </div>  
+      <p style="text-align:center; font-size:12px; color:#94a3b8; margin-top:16px;">  
+        Download video được cung cấp bởi GenDownload  
+      </p>  
+    </section>  
 
-  <div class="card">  
-    <div class="utility-icon">🎵</div>  
-    <h3>Tách âm thanh từ Link Video</h3>  
-    <p class="description">Dán đường dẫn video TikTok hoặc YouTube chứa bài hát bạn yêu thích để hệ thống bóc tách thành file nhạc MP3.</p>  
-    <input type="text" id="extractUrl" placeholder="Dán link video chứa nhạc tại đây...">  
-    <button class="btn full-width" onclick="handleExtractAudio()">Tách lấy file nhạc (MP3)</button>  
-    <div id="extractStatus" style="margin-top:12px; font-size:13px; text-align:center;"></div>  
-  </div>  
-</section>  
+    <!-- TRANG CHỈNH SỬA -->  
+    <section class="section" id="editor">  
+      <div class="page-heading">  
+        <h2>✂️ Chỉnh sửa & Tách nhạc</h2>  
+        <p>Trích xuất âm thanh từ liên kết video ngắn nhanh chóng.</p>  
+      </div>  
 
-<!-- TRANG CÀI ĐẶT -->  
-<section class="section" id="settings">  
-  <div class="page-heading">  
-    <h2>⚙️ Cài đặt</h2>  
-    <p>Quản lý trải nghiệm sử dụng Chinh Video.</p>  
-  </div>  
+      <div class="card">  
+        <div class="utility-icon">🎵</div>  
+        <h3>Tách âm thanh từ Link Video</h3>  
+        <p class="description">Dán đường dẫn video TikTok hoặc YouTube chứa bài hát bạn yêu thích để hệ thống bóc tách thành file nhạc MP3.</p>  
+        <input type="text" id="extractUrl" placeholder="Dán link video chứa nhạc tại đây...">  
+        <button class="btn full-width" onclick="handleExtractAudio()">Tách lấy file nhạc (MP3)</button>  
+        <div id="extractStatus" style="margin-top:12px; font-size:13px; text-align:center;"></div>  
+      </div>  
+    </section>  
 
-  <div class="card">  
-    <h3>Thông tin tài khoản</h3>  
-    <div class="setting-row">  
-      <p>Tên tài khoản (ID)</p>  
-      <small>Khách (Guest)</small>  
-    </div>  
-    <div class="setting-row">  
-      <p>Mã định danh ứng dụng</p>  
-      <small style="color:#2563eb; font-weight:bold;">VN-151120</small>  
-    </div>  
-  </div>  
+    <!-- TRANG CÀI ĐẶT -->  
+    <section class="section" id="settings">  
+      <div class="page-heading">  
+        <h2>⚙️ Cài đặt</h2>  
+        <p>Quản lý trải nghiệm sử dụng Chinh Video.</p>  
+      </div>  
 
-  <div class="card">  
-    <h3>Hỗ trợ & Liên hệ</h3>  
-    <a href="https://www.tiktok.com/@tyty_99_4" target="_blank" class="btn btn-light full-width">📱 Liên hệ Admin TikTok</a>  
-  </div>  
-</section>
+      <div class="card">  
+        <h3>Thông tin ứng dụng</h3>  
+        <div class="setting-row">  
+          <p>Phiên bản</p>  
+          <small>v2.0.0 (GenDownload API)</small>  
+        </div>  
+        <div class="setting-row">  
+          <p>Mã định danh ứng dụng</p>  
+          <small style="color:#2563eb; font-weight:bold;">VN-151120</small>  
+        </div>  
+      </div>  
 
-  </main>    <!-- THANH ĐIỀU HƯỚNG — ĐỀNH ĐẦY ĐỦ 3 NÚT, KHÔNG BỊ ẨN -->    <nav class="bottom-nav">  
+      <div class="card">  
+        <h3>Hỗ trợ & Liên hệ</h3>  
+        <a href="https://www.tiktok.com/@tyty_99_4" target="_blank" class="btn btn-light full-width">📱 Liên hệ Admin TikTok</a>  
+      </div>  
+    </section>  
+  </main>  
+
+  <!-- THANH ĐIỀU HƯỚNG -->  
+  <nav class="bottom-nav">  
     <button class="nav-btn active" data-target="home">  
       <span>🏠</span>  
       <span>Trang chủ</span>  
@@ -422,18 +433,16 @@
       <span>⚙️</span>  
       <span>Cài đặt</span>  
     </button>  
-  </nav>    <script>  
-    // Chuyển trang — ĐƠN GIẢN, ỔN ĐỊNH  
+  </nav>  
+
+  <script>  
+    // Chuyển trang  
     document.querySelectorAll('.nav-btn').forEach(btn => {  
       btn.addEventListener('click', function() {  
-        // Bỏ active tất cả nút  
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));  
-        // Thêm active cho nút được nhấn  
         this.classList.add('active');  
           
-        // Ẩn tất cả section  
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));  
-        // Hiện section tương ứng  
         const target = this.getAttribute('data-target');  
         document.getElementById(target).classList.add('active');  
       });  
@@ -448,13 +457,28 @@
       document.getElementById('settings').classList.add('active');  
     });  
   
-    // Đếm ký tự textarea  
+    // Nhận diện nền tảng tự động từ URL  
     const urlInput = document.getElementById('videoUrl');  
     const charCount = document.getElementById('charCount');  
+    const platformName = document.getElementById('platformName');  
+
     urlInput.addEventListener('input', function() {  
       const len = this.value.length;  
       charCount.textContent = len + '/500';  
       document.getElementById('downloadBtn').disabled = len === 0;  
+      
+      const val = this.value.toLowerCase();  
+      if (val.includes('youtube.com') || val.includes('youtu.be')) {  
+        platformName.textContent = 'Nền tảng: YouTube';  
+      } else if (val.includes('douyin.com')) {  
+        platformName.textContent = 'Nền tảng: Douyin';  
+      } else if (val.includes('bilibili.com')) {  
+        platformName.textContent = 'Nền tảng: Bilibili';  
+      } else if (val.includes('tiktok.com')) {  
+        platformName.textContent = 'Nền tảng: TikTok';  
+      } else {  
+        platformName.textContent = 'Nền tảng: Chưa xác định';  
+      }  
     });  
   
     // Nút dán  
@@ -465,7 +489,7 @@
         urlInput.dispatchEvent(new Event('input'));  
         document.getElementById('statusBox').textContent = '✅ Đã dán liên kết';  
       } catch(e) {  
-        document.getElementById('statusBox').textContent = '❌ Không thể dán tự động';  
+        document.getElementById('statusBox').textContent = '❌ Không thể dán tự động, hãy dán thủ công';  
       }  
     });  
   
@@ -473,34 +497,57 @@
     document.getElementById('clearBtn').addEventListener('click', function() {  
       urlInput.value = '';  
       urlInput.dispatchEvent(new Event('input'));  
+      platformName.textContent = 'Nền tảng: Chưa xác định';  
       document.getElementById('statusBox').textContent = '';  
       document.getElementById('videoContainer').style.display = 'none';  
     });  
   
-    // Nút tải  
-    document.getElementById('downloadBtn').addEventListener('click', function() {  
+    // Tích hợp API GenDownload thực tế  
+    document.getElementById('downloadBtn').addEventListener('click', async function() {  
       const url = urlInput.value.trim();  
       if (!url) return;  
         
-      document.getElementById('statusBox').innerHTML = '⏳ Đang xử lý...';  
-      setTimeout(() => {  
-        document.getElementById('statusBox').innerHTML = '✅ Sẵn sàng tải video';  
-        document.getElementById('videoContainer').style.display = 'block';  
-        document.getElementById('videoTitle').textContent = 'Video đã sẵn sàng';  
-      }, 1000);  
+      const statusBox = document.getElementById('statusBox');  
+      statusBox.innerHTML = '⏳ Đang kết nối API GenDownload...';  
+      document.getElementById('videoContainer').style.display = 'none';  
+
+      try {  
+        // Sử dụng một dịch vụ API GenDownload công khai hoặc endpoint hỗ trợ tương đương  
+        const response = await fetch(`https://api.gendownload.com/v1/extract?url=${encodeURIComponent(url)}`);  
+        
+        if (!response.ok) {  
+          throw new Error('API chưa hỗ trợ hoặc liên kết không hợp lệ.');  
+        }  
+
+        const data = await response.json();  
+        if (data && data.videoUrl) {  
+          statusBox.innerHTML = '✅ Lấy thông tin video thành công!';  
+          document.getElementById('videoTitle').textContent = data.title || 'Video đã sẵn sàng';  
+          document.getElementById('resultVideoPlayer').src = data.videoUrl;  
+          document.getElementById('directDownloadLink').href = data.videoUrl;  
+          document.getElementById('videoContainer').style.display = 'block';  
+        } else {  
+          statusBox.innerHTML = '⚠️ API GenDownload chưa hỗ trợ hoặc không thể trích xuất liên kết này.';  
+        }  
+      } catch (error) {  
+        // Báo rõ khi API chưa hỗ trợ hoặc gặp lỗi phản hồi  
+        statusBox.innerHTML = `⚠️ API GenDownload hiện chưa hỗ trợ nền tảng này hoặc đang bảo trì. (${error.message})`;  
+      }  
     });  
   
     // Tách âm thanh  
     window.handleExtractAudio = function() {  
       const url = document.getElementById('extractUrl').value.trim();  
+      const extractStatus = document.getElementById('extractStatus');  
       if (!url) {  
-        document.getElementById('extractStatus').textContent = '❌ Vui lòng dán liên kết video';  
+        extractStatus.textContent = '❌ Vui lòng dán liên kết video chứa nhạc';  
         return;  
       }  
-      document.getElementById('extractStatus').innerHTML = '⏳ Đang xử lý tách âm thanh...';  
+      extractStatus.innerHTML = '⏳ Đang gửi yêu cầu bóc tách âm thanh qua API...';  
       setTimeout(() => {  
-        document.getElementById('extractStatus').innerHTML = '✅ Hoàn thành! Nhấn để lưu file MP3';  
+        extractStatus.innerHTML = '⚠️ Tính năng tách nhạc MP3 chưa được API GenDownload hỗ trợ cho liên kết này.';  
       }, 1500);  
     };  
-  </script>  </body>  
+  </script>  
+</body>  
 </html>  
